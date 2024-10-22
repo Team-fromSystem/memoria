@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memoria/detail_page.dart';
 
 class AccountOverlay extends StatelessWidget {
   final OverlayPortalController controller;
@@ -76,7 +77,14 @@ class AccountOverlay extends StatelessWidget {
                                 ),
                                 child: IconButton(
                                   iconSize: 50,
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const DetailPage()),
+                                    );
+                                  },
                                   icon: const Icon(Icons.settings),
                                 ),
                               )

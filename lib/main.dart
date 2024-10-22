@@ -1,10 +1,17 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:memoria/footer/bottom_nav_bar.dart';
-import 'package:memoria/detail_page.dart';
+import 'package:memoria/firebase_options.dart';
+import 'package:memoria/bottomBar/bottom_nav_bar.dart';
 import 'package:memoria/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const MyApp());
 }
 
