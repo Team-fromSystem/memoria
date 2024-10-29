@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:memoria/firebase_options.dart';
-import 'package:memoria/bottomBar/bottom_nav_bar.dart';
-import 'package:memoria/home_page.dart';
+import 'package:memoria/components/firebase_options.dart';
+import 'package:memoria/common/bottomBar/bottom_nav_bar.dart';
+import 'package:memoria/components/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() async {

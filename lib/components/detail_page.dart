@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memoria/home_page.dart';
+import 'package:memoria/components/home_page.dart';
 
 class DetailPage extends StatelessWidget {
   const DetailPage({super.key});
@@ -8,9 +8,6 @@ class DetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
-    //double screenHeight = screenSize.height;
-    //const double w = 340;
-    //const h = w * 1.414;
     return Scaffold(
       backgroundColor: const Color.fromARGB(253, 235, 234, 238),
       body: SingleChildScrollView(
@@ -47,28 +44,41 @@ class DetailPage extends StatelessWidget {
                     children: <Widget>[
                       RichText(
                           text: const TextSpan(
-                              text: "EventTitle",
+                              text: "高田市大夏祭り",
                               style: TextStyle(
-                                  height: 1.5,
+                                  height: 1.6,
                                   color: Color(0xff333333),
                                   fontSize: 30),
                               children: <TextSpan>[
                             TextSpan(text: "\n"),
                             TextSpan(
-                              text: "sub",
+                              text: "「色とりどりの夏夜に、心躍る夏祭り」",
                               style: TextStyle(
-                                  color: Color(0xff333333), fontSize: 26),
+                                  color: Color(0xff333333), fontSize: 20),
                             ),
-                            TextSpan(text: "\n"),
                             TextSpan(
-                              text: "description",
+                              text: "\n\n",
+                              style: TextStyle(
+                                  color: Color(0xff333333), fontSize: 12),
+                            ),
+                            TextSpan(
+                              text: "主催： aaa\n\n",
                               style: TextStyle(
                                   color: Color(0xff333333),
-                                  fontSize: 20,
-                                  height: 2),
+                                  fontSize: 18,
+                                  height: 1.3),
+                            ),
+                            TextSpan(
+                              text:
+                                  "今年も高田市の夏祭りがやってきます！\n色鮮やかな提灯が夜空を彩り、祭りの熱気に包まれた街中で、さまざまな屋台やアトラクションが皆様をお迎えします。\n第30回となる今年の夏祭りは、例年よりもさらにパワーアップ！美しい花火が夜空を照らし、家族や友達とともに、忘れられない夏の思い出を作りましょう。\n日程は8月17日、土曜日の夜18:00から21:00まで。お天気が少し悪くても開催しますので、ぜひご参加ください！",
+                              style: TextStyle(
+                                  color: Color(0xff333333),
+                                  fontSize: 16,
+                                  height: 1.5),
                             ),
                           ])),
                       const Divider(
+                        height: 24,
                         thickness: 1.5,
                       ),
                     ],
@@ -183,7 +193,11 @@ class DetailPage extends StatelessWidget {
                                       color: Color(0xff333333),
                                       fontSize: 26),
                                   children: <TextSpan>[
-                                TextSpan(text: "\n"),
+                                TextSpan(
+                                  text: "\n\n",
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                                TextSpan(text: "2024 年\n"),
                                 TextSpan(
                                   text: "8/17 (土曜日)",
                                   style: TextStyle(
@@ -226,7 +240,11 @@ class DetailPage extends StatelessWidget {
                                       color: Color(0xff333333),
                                       fontSize: 26),
                                   children: <TextSpan>[
-                                TextSpan(text: "\n"),
+                                TextSpan(
+                                  text: "\n\n",
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                                TextSpan(text: "2024 年\n"),
                                 TextSpan(
                                   text: "8/17 (土曜日)",
                                   style: TextStyle(
