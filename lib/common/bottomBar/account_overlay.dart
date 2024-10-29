@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memoria/detail_page.dart';
+import 'package:memoria/components/register_page.dart';
 
 class AccountOverlay extends StatelessWidget {
   final OverlayPortalController controller;
@@ -82,7 +82,7 @@ class AccountOverlay extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const DetailPage()),
+                                              const RegisterPage()),
                                     );
                                   },
                                   icon: const Icon(Icons.settings),

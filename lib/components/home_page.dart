@@ -1,4 +1,4 @@
-import 'package:memoria/detail_page.dart';
+import 'package:memoria/components/detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -112,9 +112,6 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
-    //double screenHeight = screenSize.height;
-    //const double w = 340;
-    //const h = w * 1.414;
     return
 
         //Scaffold(
