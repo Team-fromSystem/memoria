@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memoria/components/register_page.dart';
+import 'package:memoria/pages/register_page.dart';
 
 class AccountOverlay extends StatelessWidget {
   final OverlayPortalController controller;

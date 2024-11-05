@@ -2,9 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:memoria/components/home_page.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:memoria/configs/configs.dart';
+import 'package:memoria/configs.dart';
 
 class RegisterPage extends HookWidget {
   const RegisterPage({super.key});
@@ -53,27 +52,6 @@ class RegisterPage extends HookWidget {
       return newEvent;
     }
 
-    String getWeekDayJP(int num) {
-      switch (num) {
-        case 1:
-          return "月";
-        case 2:
-          return "火";
-        case 3:
-          return "水";
-        case 4:
-          return "木";
-        case 5:
-          return "金";
-        case 6:
-          return "土";
-        case 7:
-          return "日";
-        default:
-          throw Exception("not weekDays");
-      }
-    }
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -82,23 +60,77 @@ class RegisterPage extends HookWidget {
       backgroundColor: const Color.fromARGB(253, 235, 234, 238),
       floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.save_as_rounded),
-          onPressed: () {
+          onPressed: () async {
             String newLocation =
                 " ${controllerLocation1.text}/${controllerLocation2.text}/${controllerLocation3.text}";
-            db.collection("events").add(newEvent(
-                controllerTitle.text,
-                controllerCC.text,
-                controllerHN.text,
-                controllerDescription.text,
-                newLocation,
-                openDateTime.value,
-                closeDateTime.value));
+            DocumentReference docRef = await db.collection("events").add(
+                newEvent(
+                    controllerTitle.text,
+                    controllerCC.text,
+                    controllerHN.text,
+                    controllerDescription.text,
+                    newLocation,
+                    openDateTime.value,
+                    closeDateTime.value));
+            await docRef.collection("Plane").add({
+              "decorationModelID": [0],
+              "mainModelID": [0],
+            });
+            await docRef.collection("Image").add({
+              "imageID": 0,
+              "modelID": 0,
+              "modelPosition": <String, double>{
+                "x": 0,
+                "y": 0,
+                "z": 0,
+              },
+              "modelRotaion": <String, double>{
+                "x": 0,
+                "y": 0,
+                "z": 0,
+              },
+              "modelSize": 1
+            });
+            await docRef.collection("Immersal").add({
+              "immersalMapManager": <String, dynamic>{
+                "mapID": 0,
+                "mapPosition": <String, double>{
+                  "x": 0,
+                  "y": 0,
+                  "z": 0,
+                },
+                "mapRotaion": <String, double>{
+                  "x": 0,
+                  "y": 0,
+                  "z": 0,
+                },
+              },
+              "immersalModelManager": <String, dynamic>{
+                "modelID": 0,
+                "modelPosition": <String, double>{
+                  "x": 0,
+                  "y": 0,
+                  "z": 0,
+                },
+                "modelRotaion": <String, double>{
+                  "x": 0,
+                  "y": 0,
+                  "z": 0,
+                },
+                "modelSize": 1
+              },
+              "location": <String, double>{
+                "latitude": 0,
+                "longitude": 0,
+              },
+              "radius": 0
+            });
           }),
       body: SingleChildScrollView(
           padding: const EdgeInsets.only(top: 32),
           child: Column(
             children: [
-              const TestImage(),
+              //const TestImage(),
               Container(
                 margin: const EdgeInsets.only(left: 18, top: 16),
                 alignment: Alignment.bottomLeft,
