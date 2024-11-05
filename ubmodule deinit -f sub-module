@@ -1,0 +1,35 @@
+[33mcommit fbd3b9e69539ed93c443a12353877b697f200dd7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeat/1_firestore[m[33m, [m[1;31morigin/feat/1_firestore[m[33m)[m
+Author: Kousuke222 <96336426+Kousuke222@users.noreply.github.com>
+Date:   Tue Nov 5 18:44:48 2024 +0900
+
+    eventリストの取得まで（fav,booked以外）
+
+[33mcommit 004a512dcd2a837d722edd6041103773d78d3a2d[m
+Author: Kousuke222 <96336426+Kousuke222@users.noreply.github.com>
+Date:   Fri Nov 1 18:00:51 2024 +0900
+
+    submodule setup
+
+[33mcommit 7571a72d05130126d99955278f6d0952ce1e2686[m
+Author: Kousuke222 <Kousuke222015@gmail.com>
+Date:   Wed Oct 30 05:02:16 2024 +0900
+
+    eventsにイベントデータの雛形を登録する機能の実装
+
+[33mcommit 6b0153bd0005c0c638e8fa077190a32069b53ff5[m[33m ([m[1;32mmain[m[33m)[m
+Author: Kousuke222 <Kousuke222015@gmail.com>
+Date:   Tue Oct 22 19:12:01 2024 +0900
+
+    firebase導入
+
+[33mcommit ac85cceb3928c6b9666f1dc38aa50dd551308def[m
+Author: Kousuke222 <Kousuke222015@gmail.com>
+Date:   Sun Oct 20 12:06:36 2024 +0900
+
+    setup app
+
+[33mcommit e30c01a8a2822a353f26455e708ae4f9da8d76b1[m
+Author: Kousuke222 <Kousuke222015@gmail.com>
+Date:   Sun Oct 20 12:05:11 2024 +0900
+
+    first commit
