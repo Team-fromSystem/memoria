@@ -219,7 +219,7 @@ class HomePage extends HookConsumerWidget {
                       itemBuilder: (context, index, realIndex) =>
                           BannerImage(event: value[index]),
                       options: CarouselOptions(
-                        aspectRatio: 0.9,
+                        aspectRatio: 0.89,
                         //height: h, //高さ
                         //enlargeCenterPage: true,
                         //enlargeStrategy: CenterPageEnlargeStrategy.scale,
@@ -227,7 +227,7 @@ class HomePage extends HookConsumerWidget {
                         autoPlay: false, //自動でスライドしてくれるか
                         //animateToClosest: false,
                         //enlargeFactor: 0,
-                        viewportFraction: 0.8, //各カードの表示される範囲の割合
+                        viewportFraction: 0.822, //各カードの表示される範囲の割合
                         enableInfiniteScroll: true, //最後のカードから最初のカードへの遷移
                         autoPlayInterval:
                             const Duration(seconds: 5), //カードのインターバル

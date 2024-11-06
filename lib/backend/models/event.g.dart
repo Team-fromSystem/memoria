@@ -8,6 +8,7 @@ part of 'event.dart';
 
 _$EventImpl _$$EventImplFromJson(Map<String, dynamic> json) => _$EventImpl(
       hostID: (json['hostID'] as num).toInt(),
+      eventID: json['eventID'] as String,
       bannerURL: json['bannerURL'] as String,
       mapURL: json['mapURL'] as String,
       title: json['title'] as String,
@@ -32,6 +33,7 @@ _$EventImpl _$$EventImplFromJson(Map<String, dynamic> json) => _$EventImpl(
 Map<String, dynamic> _$$EventImplToJson(_$EventImpl instance) =>
     <String, dynamic>{
       'hostID': instance.hostID,
+      'eventID': instance.eventID,
       'bannerURL': instance.bannerURL,
       'mapURL': instance.mapURL,
       'title': instance.title,

@@ -22,6 +22,8 @@ Event _$EventFromJson(Map<String, dynamic> json) {
 mixin _$Event {
   @JsonKey(name: 'hostID')
   int get hostID => throw _privateConstructorUsedError;
+  @JsonKey(name: 'eventID')
+  String get eventID => throw _privateConstructorUsedError;
   @JsonKey(name: 'bannerURL')
   String get bannerURL => throw _privateConstructorUsedError;
   @JsonKey(name: 'mapURL')
@@ -62,6 +64,7 @@ abstract class $EventCopyWith<$Res> {
   @useResult
   $Res call(
       {@JsonKey(name: 'hostID') int hostID,
+      @JsonKey(name: 'eventID') String eventID,
       @JsonKey(name: 'bannerURL') String bannerURL,
       @JsonKey(name: 'mapURL') String mapURL,
       @JsonKey(name: 'title') String title,
@@ -90,6 +93,7 @@ class _$EventCopyWithImpl<$Res, $Val extends Event>
   @override
   $Res call({
     Object? hostID = null,
+    Object? eventID = null,
     Object? bannerURL = null,
     Object? mapURL = null,
     Object? title = null,
@@ -108,6 +112,10 @@ class _$EventCopyWithImpl<$Res, $Val extends Event>
           ? _value.hostID
           : hostID // ignore: cast_nullable_to_non_nullable
               as int,
+      eventID: null == eventID
+          ? _value.eventID
+          : eventID // ignore: cast_nullable_to_non_nullable
+              as String,
       bannerURL: null == bannerURL
           ? _value.bannerURL
           : bannerURL // ignore: cast_nullable_to_non_nullable
@@ -169,6 +177,7 @@ abstract class _$$EventImplCopyWith<$Res> implements $EventCopyWith<$Res> {
   @useResult
   $Res call(
       {@JsonKey(name: 'hostID') int hostID,
+      @JsonKey(name: 'eventID') String eventID,
       @JsonKey(name: 'bannerURL') String bannerURL,
       @JsonKey(name: 'mapURL') String mapURL,
       @JsonKey(name: 'title') String title,
@@ -195,6 +204,7 @@ class __$$EventImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? hostID = null,
+    Object? eventID = null,
     Object? bannerURL = null,
     Object? mapURL = null,
     Object? title = null,
@@ -213,6 +223,10 @@ class __$$EventImplCopyWithImpl<$Res>
           ? _value.hostID
           : hostID // ignore: cast_nullable_to_non_nullable
               as int,
+      eventID: null == eventID
+          ? _value.eventID
+          : eventID // ignore: cast_nullable_to_non_nullable
+              as String,
       bannerURL: null == bannerURL
           ? _value.bannerURL
           : bannerURL // ignore: cast_nullable_to_non_nullable
@@ -270,6 +284,7 @@ class __$$EventImplCopyWithImpl<$Res>
 class _$EventImpl extends _Event {
   const _$EventImpl(
       {@JsonKey(name: 'hostID') required this.hostID,
+      @JsonKey(name: 'eventID') required this.eventID,
       @JsonKey(name: 'bannerURL') required this.bannerURL,
       @JsonKey(name: 'mapURL') required this.mapURL,
       @JsonKey(name: 'title') required this.title,
@@ -293,6 +308,9 @@ class _$EventImpl extends _Event {
   @override
   @JsonKey(name: 'hostID')
   final int hostID;
+  @override
+  @JsonKey(name: 'eventID')
+  final String eventID;
   @override
   @JsonKey(name: 'bannerURL')
   final String bannerURL;
@@ -352,7 +370,7 @@ class _$EventImpl extends _Event {
 
   @override
   String toString() {
-    return 'Event(hostID: $hostID, bannerURL: $bannerURL, mapURL: $mapURL, title: $title, catchCopy: $catchCopy, description: $description, location: $location, createdAt: $createdAt, open: $open, close: $close, imageID: $imageID, modelID: $modelID, detectType: $detectType)';
+    return 'Event(hostID: $hostID, eventID: $eventID, bannerURL: $bannerURL, mapURL: $mapURL, title: $title, catchCopy: $catchCopy, description: $description, location: $location, createdAt: $createdAt, open: $open, close: $close, imageID: $imageID, modelID: $modelID, detectType: $detectType)';
   }
 
   @override
@@ -361,6 +379,7 @@ class _$EventImpl extends _Event {
         (other.runtimeType == runtimeType &&
             other is _$EventImpl &&
             (identical(other.hostID, hostID) || other.hostID == hostID) &&
+            (identical(other.eventID, eventID) || other.eventID == eventID) &&
             (identical(other.bannerURL, bannerURL) ||
                 other.bannerURL == bannerURL) &&
             (identical(other.mapURL, mapURL) || other.mapURL == mapURL) &&
@@ -386,6 +405,7 @@ class _$EventImpl extends _Event {
   int get hashCode => Object.hash(
       runtimeType,
       hostID,
+      eventID,
       bannerURL,
       mapURL,
       title,
@@ -416,6 +436,7 @@ class _$EventImpl extends _Event {
 abstract class _Event extends Event {
   const factory _Event(
       {@JsonKey(name: 'hostID') required final int hostID,
+      @JsonKey(name: 'eventID') required final String eventID,
       @JsonKey(name: 'bannerURL') required final String bannerURL,
       @JsonKey(name: 'mapURL') required final String mapURL,
       @JsonKey(name: 'title') required final String title,
@@ -440,6 +461,9 @@ abstract class _Event extends Event {
   @override
   @JsonKey(name: 'hostID')
   int get hostID;
+  @override
+  @JsonKey(name: 'eventID')
+  String get eventID;
   @override
   @JsonKey(name: 'bannerURL')
   String get bannerURL;

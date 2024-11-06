@@ -10,6 +10,7 @@ class Event with _$Event {
   const Event._();
   const factory Event({
     @JsonKey(name: 'hostID') required int hostID,
+    @JsonKey(name: 'eventID') required String eventID,
     @JsonKey(name: 'bannerURL') required String bannerURL,
     @JsonKey(name: 'mapURL') required String mapURL,
     @JsonKey(name: 'title') required String title,

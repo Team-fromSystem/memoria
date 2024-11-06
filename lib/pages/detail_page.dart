@@ -12,7 +12,6 @@ class DetailPage extends StatelessWidget {
     final Size screenSize = MediaQuery.of(context).size;
     final double screenWidth = screenSize.width;
     final List<String> eventLocation = event.location.split('/');
-    final description = "${event.description}";
     return Scaffold(
       backgroundColor: const Color.fromARGB(253, 235, 234, 238),
       body: SingleChildScrollView(
