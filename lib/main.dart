@@ -1,8 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:memoria/components/firebase_options.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:memoria/firebase_options.dart';
 import 'package:memoria/common/bottomBar/bottom_nav_bar.dart';
-import 'package:memoria/components/home_page.dart';
+import 'package:memoria/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
@@ -12,7 +13,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
                   style: TextStyle(fontSize: 80),
                 ),
               ),
-              //DetailPage(),
+              //DetailPage(event: ,),
             ],
           ),
           bottomNavigationBar: BottomNavBar(controller: controller),

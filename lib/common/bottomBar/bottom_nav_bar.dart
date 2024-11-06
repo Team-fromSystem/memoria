@@ -11,7 +11,7 @@ class BottomNavBar extends HookWidget {
   Widget build(BuildContext context) {
     final OverlayPortalController overlayPortalController =
         OverlayPortalController();
-    var selected = useState(0);
+    var selected = useState(1);
 
     return Stack(
       children: <Widget>[
