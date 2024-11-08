@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:memoria/backend/fileDownloader/fileDownloader.dart';
 import 'package:memoria/backend/models/event.dart';
 import 'package:memoria/configs.dart';
 
@@ -300,7 +303,44 @@ class DetailPage extends StatelessWidget {
                         )),
                   )
                 ],
-              )
+              ),
+              TextButton(
+                  onPressed: () async {
+                    if (event.imageID.isEmpty && event.detectType.contains(2)) {
+                      debugPrint("画像トラッキングを使用するのに画像データが存在しません");
+                      return;
+                    }
+                    final List<FileManager> modelList =
+                        await FileDownloader().getfileURL(event.modelID, true);
+                    if (modelList.length != event.modelID.length) {
+                      debugPrint("エラー：モデルデータが足りていません");
+                      return;
+                    }
+                    if (event.detectType.contains(2)) {
+                      final List<FileManager> imageList = await FileDownloader()
+                          .getfileURL(event.imageID, false);
+                      if (imageList.length != event.imageID.length) {
+                        debugPrint("エラー：画像データが足りていません");
+                        return;
+                      }
+                      final bool getImage = await FileDownloader()
+                          .fileDownloader(imageList, false);
+                      if (!getImage) {
+                        debugPrint("エラー：ダウンロードに失敗しました");
+                        return;
+                      }
+                    } else {
+                      debugPrint("今回は画像は使わないぜ");
+                    }
+                    final bool getModel =
+                        await FileDownloader().fileDownloader(modelList, true);
+                    if (!getModel) {
+                      debugPrint("エラー：ダウンロードに失敗しました");
+                      return;
+                    }
+                    debugPrint("ALL OK");
+                  },
+                  child: const Text("データ取得"))
             ],
           )),
     );
