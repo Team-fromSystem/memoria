@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FileDownloader {
@@ -13,20 +12,31 @@ class FileDownloader {
     for (var fileManager in fileList) {
       final httpsRef = storage.refFromURL(fileManager.url);
       final appDocDir = await getApplicationDocumentsDirectory();
+
       final String type = isModelTraget ? "model" : "image";
       final filePath =
           "${appDocDir.path}/$type/${fileManager.name}${fileManager.id}.${fileManager.format}";
       final file = File(filePath);
+
       if (!File(filePath).existsSync()) {
+        if (!File("${appDocDir.path}/$type").existsSync()) {
+          try {
+            await Directory("${appDocDir.path}/$type").create();
+          } catch (e) {
+            debugPrint("$e");
+            return false;
+          }
+          debugPrint("filePath:${appDocDir.path}/$type保存用ディレクトリを作成");
+        }
         try {
           httpsRef.writeToFile(file);
         } catch (e) {
           debugPrint("$e");
           return false;
         }
-        debugPrint("{$filePath}ダウンロード完了(問題なし)");
+        debugPrint("filePath:{$filePath}ダウンロード完了(問題なし)");
       } else {
-        debugPrint("{$filePath}は存在するぜ(問題なし)");
+        debugPrint("{$filePath}は存在(問題なし)");
       }
     }
     return true;

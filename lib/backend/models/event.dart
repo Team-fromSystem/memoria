@@ -8,6 +8,12 @@ part 'event.g.dart';
 @freezed
 class Event with _$Event {
   const Event._();
+
+  ///detectType=1 : Image
+  ///
+  ///detectType=2 : Immersal
+  ///
+  ///detectType=3 : Plane
   const factory Event({
     @JsonKey(name: 'hostID') required int hostID,
     @JsonKey(name: 'eventID') required String eventID,

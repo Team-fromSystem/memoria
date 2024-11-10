@@ -306,8 +306,8 @@ class DetailPage extends StatelessWidget {
               ),
               TextButton(
                   onPressed: () async {
-                    if (event.imageID.isEmpty && event.detectType.contains(2)) {
-                      debugPrint("画像トラッキングを使用するのに画像データが存在しません");
+                    if (event.imageID.isEmpty && event.detectType.contains(1)) {
+                      debugPrint("画像トラッキングで使用する画像データが存在しません");
                       return;
                     }
                     final List<FileManager> modelList =
@@ -316,7 +316,7 @@ class DetailPage extends StatelessWidget {
                       debugPrint("エラー：モデルデータが足りていません");
                       return;
                     }
-                    if (event.detectType.contains(2)) {
+                    if (event.detectType.contains(1)) {
                       final List<FileManager> imageList = await FileDownloader()
                           .getfileURL(event.imageID, false);
                       if (imageList.length != event.imageID.length) {
@@ -340,7 +340,7 @@ class DetailPage extends StatelessWidget {
                     }
                     debugPrint("ALL OK");
                   },
-                  child: const Text("データ取得"))
+                  child: const Text("データ取得")),
             ],
           )),
     );
