@@ -1,10 +1,11 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 import 'package:memoria/backend/fileDownloader/fileDownloader.dart';
 import 'package:memoria/backend/models/event.dart';
-import 'package:memoria/configs.dart';
+import 'package:memoria/utils/location_checker.dart';
+import 'package:memoria/utils/location_permission_request.dart';
+import 'package:memoria/utils/weekday_converter.dart';
 
 class DetailPage extends StatelessWidget {
   final Event event;
@@ -15,8 +16,19 @@ class DetailPage extends StatelessWidget {
     final Size screenSize = MediaQuery.of(context).size;
     final double screenWidth = screenSize.width;
     final List<String> eventLocation = event.location.split('/');
+    final Location location = Location();
     return Scaffold(
       backgroundColor: const Color.fromARGB(253, 235, 234, 238),
+      floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.open_in_new_rounded),
+          onPressed: () async {
+            if (!await GetLocation.checkEventArea(location, event)) {
+              debugPrint("イベント範囲外です");
+            } else {
+              debugPrint("unityWidgetへ");
+              //TODO unityWidgetへ遷移
+            }
+          }),
       body: SingleChildScrollView(
           padding: const EdgeInsets.only(top: 32),
           child: Column(
@@ -341,6 +353,11 @@ class DetailPage extends StatelessWidget {
                     debugPrint("ALL OK");
                   },
                   child: const Text("データ取得")),
+              TextButton(
+                  onPressed: () async {
+                    RequestLocationPermission.request(location);
+                  },
+                  child: const Text("GPSリクエスト")),
             ],
           )),
     );

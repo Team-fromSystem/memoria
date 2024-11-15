@@ -31,6 +31,7 @@ class Event with _$Event {
     @JsonKey(name: 'imageID') required List<int> imageID,
     @JsonKey(name: 'modelID') required List<int> modelID,
     @JsonKey(name: 'detectType') required List<int> detectType,
+    @JsonKey(name: 'geo') required Map<String, dynamic> geo,
   }) = _Event;
 
   factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);

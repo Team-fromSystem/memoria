@@ -42,6 +42,7 @@ class MyApp extends StatelessWidget {
             controller: controller,
             children: [
               const HomePage(),
+              //const SearchPage(),
               Container(
                 color: Colors.red,
                 child: const Text(

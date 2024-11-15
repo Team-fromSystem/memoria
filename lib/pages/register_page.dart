@@ -3,7 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:memoria/configs.dart';
+import 'package:memoria/utils/weekday_converter.dart';
 
 class RegisterPage extends HookWidget {
   const RegisterPage({super.key});
@@ -12,7 +12,7 @@ class RegisterPage extends HookWidget {
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
-    final db = AppConst.db;
+    final db = FirebaseFirestore.instance;
     final nowDateTime = DateTime.now();
     final openDateTime = useState<DateTime>(nowDateTime);
     final closeDateTime = useState<DateTime>(nowDateTime);
@@ -34,6 +34,11 @@ class RegisterPage extends HookWidget {
         DateTime closeDateTime) {
       Timestamp openTime = Timestamp.fromDate(openDateTime);
       Timestamp closeTime = Timestamp.fromDate(closeDateTime);
+      final Map<String, dynamic> geoMap = {
+        "geoPoint": const GeoPoint(0, 0),
+        "geohash": "nohash",
+      };
+
       final Map<String, dynamic> newEvent = {
         "bannerURL": "noBannerURL",
         "catchCopy": newCatchCopy, //
@@ -47,6 +52,8 @@ class RegisterPage extends HookWidget {
         "modelID": [0],
         "open": openTime, //
         "title": newTitle, //
+        "detectType": [0],
+        "geo": geoMap,
       };
 
       return newEvent;

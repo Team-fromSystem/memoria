@@ -28,6 +28,7 @@ _$EventImpl _$$EventImplFromJson(Map<String, dynamic> json) => _$EventImpl(
       detectType: (json['detectType'] as List<dynamic>)
           .map((e) => (e as num).toInt())
           .toList(),
+      geo: json['geo'] as Map<String, dynamic>,
     );
 
 Map<String, dynamic> _$$EventImplToJson(_$EventImpl instance) =>
@@ -46,4 +47,5 @@ Map<String, dynamic> _$$EventImplToJson(_$EventImpl instance) =>
       'imageID': instance.imageID,
       'modelID': instance.modelID,
       'detectType': instance.detectType,
+      'geo': instance.geo,
     };
