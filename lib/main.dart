@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
             fontWeight: FontWeight.w500,
           )).fontFamily,
           colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 58, 183, 152)),
+              seedColor: const Color.fromARGB(255, 66, 206, 171)),
           useMaterial3: true,
         ),
         home: Scaffold(

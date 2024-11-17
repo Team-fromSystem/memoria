@@ -234,7 +234,7 @@ class HomePage extends HookConsumerWidget {
                         //height: h, //高さ
                         //enlargeCenterPage: true,
                         //enlargeStrategy: CenterPageEnlargeStrategy.scale,
-                        initialPage: 1, //最初に表示されるページ
+                        initialPage: 0, //最初に表示されるページ
                         autoPlay: true, //自動でスライドしてくれるか
                         animateToClosest: false,
                         enlargeFactor: 1,
