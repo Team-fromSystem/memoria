@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:memoria/backend/models/event.dart';
 import 'package:memoria/backend/provider/provider_event.dart';
@@ -159,10 +160,10 @@ class HomePage extends HookConsumerWidget {
     Size screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
 
-    //final db = AppConst.db;
-    //final eventColRef = db.collection('events');
-    //final event1Ref = eventColRef.doc("unNj4aBymMVAMtLMxM58").get();
     final eventList = ref.watch(eventProvider);
+    final infoCardTitle = useState("");
+    final infoCardCC = useState("");
+    final infoCardDescription = useState("");
 
     return SingleChildScrollView(
         padding: const EdgeInsets.only(top: 32),
@@ -173,7 +174,7 @@ class HomePage extends HookConsumerWidget {
               clipBehavior: Clip.none,
               children: [
                 Positioned(
-                  left: screenWidth / 7,
+                  left: screenWidth / 8,
                   child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
@@ -181,8 +182,8 @@ class HomePage extends HookConsumerWidget {
                       ),
                       margin: const EdgeInsets.only(top: 40),
                       padding: const EdgeInsets.only(top: 425),
-                      height: 600,
-                      width: 315,
+                      height: 609,
+                      width: 330,
                       child: Container(
                         alignment: Alignment.topLeft,
                         width: double.infinity,
@@ -193,22 +194,30 @@ class HomePage extends HookConsumerWidget {
                                 top: BorderSide(
                                     width: 1, color: Color(0xff888888)))),
                         child: RichText(
-                            text: const TextSpan(
-                                text: "title",
-                                style: TextStyle(
-                                    color: Color(0xff333333), fontSize: 26),
+                            text: TextSpan(
+                                text: infoCardTitle.value,
+                                style: const TextStyle(
+                                    color: Color(0xff333333),
+                                    fontSize: 28,
+                                    height: 1.05),
                                 children: <TextSpan>[
-                              TextSpan(text: "\n"),
+                              const TextSpan(text: "\n"),
                               TextSpan(
-                                text: "sub",
-                                style: TextStyle(
-                                    color: Color(0xff333333), fontSize: 20),
+                                text: infoCardCC.value,
+                                style: const TextStyle(
+                                    color: Color(0xff333333),
+                                    fontSize: 20,
+                                    height: 1.4),
                               ),
-                              TextSpan(text: "\n"),
+                              const TextSpan(text: "\n"),
                               TextSpan(
-                                text: "description",
-                                style: TextStyle(
-                                    color: Color(0xff333333), fontSize: 16),
+                                text: infoCardDescription.value.length <= 56
+                                    ? "\n${infoCardDescription.value.replaceAll('\\n', '\n')}"
+                                    : "\n${infoCardDescription.value.replaceAll('\\n', '\n').substring(0, 55)}…",
+                                style: const TextStyle(
+                                    color: Color(0xff333333),
+                                    fontSize: 16,
+                                    height: 1.1),
                               ),
                             ])),
                       )),
@@ -216,23 +225,28 @@ class HomePage extends HookConsumerWidget {
                 switch (eventList) {
                   AsyncData(:final value) => CarouselSlider.builder(
                       itemCount: value.length,
-                      itemBuilder: (context, index, realIndex) =>
-                          BannerImage(event: value[index]),
+                      itemBuilder: (context, index, realIndex) {
+                        return BannerImage(event: value[index]);
+                      },
                       options: CarouselOptions(
                         aspectRatio: 0.89,
+                        autoPlayInterval: const Duration(seconds: 6),
                         //height: h, //高さ
                         //enlargeCenterPage: true,
                         //enlargeStrategy: CenterPageEnlargeStrategy.scale,
-                        initialPage: 1, //最初に表示されるページ
-                        autoPlay: false, //自動でスライドしてくれるか
-                        //animateToClosest: false,
-                        //enlargeFactor: 0,
+                        initialPage: 0, //最初に表示されるページ
+                        autoPlay: true, //自動でスライドしてくれるか
+                        animateToClosest: false,
+                        enlargeFactor: 1,
                         viewportFraction: 0.822, //各カードの表示される範囲の割合
                         enableInfiniteScroll: true, //最後のカードから最初のカードへの遷移
-                        autoPlayInterval:
-                            const Duration(seconds: 5), //カードのインターバル
                         autoPlayAnimationDuration: const Duration(
-                            milliseconds: 800), //スライドが始まって終わるまでの時間),
+                            milliseconds: 1000), //スライドが始まって終わるまでの時間),
+                        onPageChanged: (index, reason) {
+                          infoCardTitle.value = value[index].title;
+                          infoCardCC.value = value[index].catchCopy;
+                          infoCardDescription.value = value[index].description;
+                        },
                       )),
                   AsyncError(:final error) => Text('Riverpod Error:$error'),
                   _ => const CircularProgressIndicator(),

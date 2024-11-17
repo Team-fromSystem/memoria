@@ -8,6 +8,12 @@ part 'event.g.dart';
 @freezed
 class Event with _$Event {
   const Event._();
+
+  ///detectType=1 : Image
+  ///
+  ///detectType=2 : Immersal
+  ///
+  ///detectType=3 : Plane
   const factory Event({
     @JsonKey(name: 'hostID') required int hostID,
     @JsonKey(name: 'eventID') required String eventID,
@@ -25,6 +31,7 @@ class Event with _$Event {
     @JsonKey(name: 'imageID') required List<int> imageID,
     @JsonKey(name: 'modelID') required List<int> modelID,
     @JsonKey(name: 'detectType') required List<int> detectType,
+    @JsonKey(name: 'geo') required Map<String, dynamic> geo,
   }) = _Event;
 
   factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
