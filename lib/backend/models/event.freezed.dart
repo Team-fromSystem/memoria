@@ -51,9 +51,15 @@ mixin _$Event {
   List<int> get modelID => throw _privateConstructorUsedError;
   @JsonKey(name: 'detectType')
   List<int> get detectType => throw _privateConstructorUsedError;
+  @JsonKey(name: 'geo')
+  Map<String, dynamic> get geo => throw _privateConstructorUsedError;
 
+  /// Serializes this Event to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Event
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $EventCopyWith<Event> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -76,7 +82,8 @@ abstract class $EventCopyWith<$Res> {
       @JsonKey(name: 'close') @DateTimeConverter() DateTime close,
       @JsonKey(name: 'imageID') List<int> imageID,
       @JsonKey(name: 'modelID') List<int> modelID,
-      @JsonKey(name: 'detectType') List<int> detectType});
+      @JsonKey(name: 'detectType') List<int> detectType,
+      @JsonKey(name: 'geo') Map<String, dynamic> geo});
 }
 
 /// @nodoc
@@ -89,6 +96,8 @@ class _$EventCopyWithImpl<$Res, $Val extends Event>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Event
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -106,6 +115,7 @@ class _$EventCopyWithImpl<$Res, $Val extends Event>
     Object? imageID = null,
     Object? modelID = null,
     Object? detectType = null,
+    Object? geo = null,
   }) {
     return _then(_value.copyWith(
       hostID: null == hostID
@@ -164,6 +174,10 @@ class _$EventCopyWithImpl<$Res, $Val extends Event>
           ? _value.detectType
           : detectType // ignore: cast_nullable_to_non_nullable
               as List<int>,
+      geo: null == geo
+          ? _value.geo
+          : geo // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
     ) as $Val);
   }
 }
@@ -189,7 +203,8 @@ abstract class _$$EventImplCopyWith<$Res> implements $EventCopyWith<$Res> {
       @JsonKey(name: 'close') @DateTimeConverter() DateTime close,
       @JsonKey(name: 'imageID') List<int> imageID,
       @JsonKey(name: 'modelID') List<int> modelID,
-      @JsonKey(name: 'detectType') List<int> detectType});
+      @JsonKey(name: 'detectType') List<int> detectType,
+      @JsonKey(name: 'geo') Map<String, dynamic> geo});
 }
 
 /// @nodoc
@@ -200,6 +215,8 @@ class __$$EventImplCopyWithImpl<$Res>
       _$EventImpl _value, $Res Function(_$EventImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Event
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -217,6 +234,7 @@ class __$$EventImplCopyWithImpl<$Res>
     Object? imageID = null,
     Object? modelID = null,
     Object? detectType = null,
+    Object? geo = null,
   }) {
     return _then(_$EventImpl(
       hostID: null == hostID
@@ -275,6 +293,10 @@ class __$$EventImplCopyWithImpl<$Res>
           ? _value._detectType
           : detectType // ignore: cast_nullable_to_non_nullable
               as List<int>,
+      geo: null == geo
+          ? _value._geo
+          : geo // ignore: cast_nullable_to_non_nullable
+              as Map<String, dynamic>,
     ));
   }
 }
@@ -296,10 +318,12 @@ class _$EventImpl extends _Event {
       @JsonKey(name: 'close') @DateTimeConverter() required this.close,
       @JsonKey(name: 'imageID') required final List<int> imageID,
       @JsonKey(name: 'modelID') required final List<int> modelID,
-      @JsonKey(name: 'detectType') required final List<int> detectType})
+      @JsonKey(name: 'detectType') required final List<int> detectType,
+      @JsonKey(name: 'geo') required final Map<String, dynamic> geo})
       : _imageID = imageID,
         _modelID = modelID,
         _detectType = detectType,
+        _geo = geo,
         super._();
 
   factory _$EventImpl.fromJson(Map<String, dynamic> json) =>
@@ -368,9 +392,18 @@ class _$EventImpl extends _Event {
     return EqualUnmodifiableListView(_detectType);
   }
 
+  final Map<String, dynamic> _geo;
+  @override
+  @JsonKey(name: 'geo')
+  Map<String, dynamic> get geo {
+    if (_geo is EqualUnmodifiableMapView) return _geo;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_geo);
+  }
+
   @override
   String toString() {
-    return 'Event(hostID: $hostID, eventID: $eventID, bannerURL: $bannerURL, mapURL: $mapURL, title: $title, catchCopy: $catchCopy, description: $description, location: $location, createdAt: $createdAt, open: $open, close: $close, imageID: $imageID, modelID: $modelID, detectType: $detectType)';
+    return 'Event(hostID: $hostID, eventID: $eventID, bannerURL: $bannerURL, mapURL: $mapURL, title: $title, catchCopy: $catchCopy, description: $description, location: $location, createdAt: $createdAt, open: $open, close: $close, imageID: $imageID, modelID: $modelID, detectType: $detectType, geo: $geo)';
   }
 
   @override
@@ -397,10 +430,11 @@ class _$EventImpl extends _Event {
             const DeepCollectionEquality().equals(other._imageID, _imageID) &&
             const DeepCollectionEquality().equals(other._modelID, _modelID) &&
             const DeepCollectionEquality()
-                .equals(other._detectType, _detectType));
+                .equals(other._detectType, _detectType) &&
+            const DeepCollectionEquality().equals(other._geo, _geo));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -417,9 +451,12 @@ class _$EventImpl extends _Event {
       close,
       const DeepCollectionEquality().hash(_imageID),
       const DeepCollectionEquality().hash(_modelID),
-      const DeepCollectionEquality().hash(_detectType));
+      const DeepCollectionEquality().hash(_detectType),
+      const DeepCollectionEquality().hash(_geo));
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Event
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$EventImplCopyWith<_$EventImpl> get copyWith =>
@@ -452,8 +489,9 @@ abstract class _Event extends Event {
       required final DateTime close,
       @JsonKey(name: 'imageID') required final List<int> imageID,
       @JsonKey(name: 'modelID') required final List<int> modelID,
-      @JsonKey(name: 'detectType')
-      required final List<int> detectType}) = _$EventImpl;
+      @JsonKey(name: 'detectType') required final List<int> detectType,
+      @JsonKey(name: 'geo')
+      required final Map<String, dynamic> geo}) = _$EventImpl;
   const _Event._() : super._();
 
   factory _Event.fromJson(Map<String, dynamic> json) = _$EventImpl.fromJson;
@@ -504,7 +542,13 @@ abstract class _Event extends Event {
   @JsonKey(name: 'detectType')
   List<int> get detectType;
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(name: 'geo')
+  Map<String, dynamic> get geo;
+
+  /// Create a copy of Event
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$EventImplCopyWith<_$EventImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

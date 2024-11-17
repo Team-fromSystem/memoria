@@ -1,7 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animated_button/flutter_animated_button.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:location/location.dart';
+import 'package:memoria/backend/fileDownloader/fileDownloader.dart';
 import 'package:memoria/backend/models/event.dart';
-import 'package:memoria/configs.dart';
+import 'package:memoria/common/dialogs.dart';
+import 'package:memoria/utils/location_checker.dart';
+import 'package:memoria/utils/location_permission_request.dart';
+import 'package:memoria/utils/weekday_converter.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class DetailPage extends StatelessWidget {
   final Event event;
@@ -12,10 +21,150 @@ class DetailPage extends StatelessWidget {
     final Size screenSize = MediaQuery.of(context).size;
     final double screenWidth = screenSize.width;
     final List<String> eventLocation = event.location.split('/');
+    final Location location = Location();
     return Scaffold(
       backgroundColor: const Color.fromARGB(253, 235, 234, 238),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: const Text("イベント詳細"),
+        titleTextStyle: const TextStyle(
+            fontSize: 16, color: Colors.black, fontWeight: FontWeight.w500),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(252, 235, 234, 238),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                spreadRadius: 1,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(18),
+              bottomRight: Radius.circular(18),
+            ),
+          ),
+        ),
+        toolbarHeight: 70,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        actions: [
+          CircleAvatar(
+            radius: 28,
+            child: IconButton(
+                iconSize: 32,
+                onPressed: () async {
+                  await Dialogs.checkFile(context, event);
+                },
+                icon: const Icon(CupertinoIcons.cloud_download)),
+          ),
+          const Padding(padding: EdgeInsets.only(right: 8)),
+          Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  spreadRadius: 0.1,
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: AnimatedButton(
+              width: 90,
+              height: 54,
+              borderRadius: 50,
+              text: '入場！',
+              textStyle: const TextStyle(
+                  height: -0.1,
+                  fontSize: 17,
+                  letterSpacing: 2,
+                  color: Color.fromARGB(205, 0, 0, 0),
+                  fontWeight: FontWeight.w100),
+              animationDuration: const Duration(milliseconds: 800),
+              selectedTextColor: Colors.black,
+              transitionType: TransitionType.LEFT_TOP_ROUNDER,
+              //backgroundColor: const Color.fromARGB(255, 171, 242, 220),
+              gradient: LinearGradient(
+                begin: FractionalOffset.topLeft,
+                end: FractionalOffset.bottomRight,
+                colors: [
+                  const Color(0xff9941d8).withOpacity(0.7),
+                  const Color.fromARGB(255, 171, 242, 220),
+                ],
+              ),
+              selectedGradientColor: LinearGradient(
+                begin: FractionalOffset.topLeft,
+                end: FractionalOffset.bottomRight,
+                colors: [
+                  const Color(0xffe4a972).withOpacity(0.8),
+                  const Color(0xff9941d8).withOpacity(0.8),
+                ],
+              ),
+              onPress: () {},
+            ),
+          ),
+          const Padding(padding: EdgeInsets.only(right: 10)),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+          elevation: 5.0,
+          child: const Icon(Icons.camera),
+          onPressed: () async {
+            if (await RequestLocationPermission.request(location).isDenied) {
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('位置情報リクエストが拒否されました'),
+                    content: const Text('ARコンテンツを使用するためは許可が必要です。'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('OK'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+              return;
+            }
+            if (!await GetLocation.checkEventArea(location, event)) {
+              debugPrint("イベント範囲外です");
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('このイベントの開催エリア外です'),
+                    content: const Text('AR'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('OK'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+              return;
+            } else {
+              debugPrint("unityWidgetへ");
+              //TODO unityWidgetへ遷移
+            }
+          }),
       body: SingleChildScrollView(
-          padding: const EdgeInsets.only(top: 32),
+          padding: const EdgeInsets.only(top: 100),
           child: Column(
             children: [
               Container(
@@ -300,7 +449,72 @@ class DetailPage extends StatelessWidget {
                         )),
                   )
                 ],
-              )
+              ),
+              TextButton(
+                  onPressed: () async {
+                    if (event.imageID.isEmpty && event.detectType.contains(1)) {
+                      debugPrint("画像トラッキングで使用する画像データが存在しません");
+                      return;
+                    }
+                    final List<FileManager> modelList =
+                        await FileDownloader().getfileURL(event.modelID, true);
+                    if (modelList.length != event.modelID.length) {
+                      debugPrint("エラー：モデルデータが足りていません");
+                      return;
+                    }
+                    if (event.detectType.contains(1)) {
+                      final List<FileManager> imageList = await FileDownloader()
+                          .getfileURL(event.imageID, false);
+                      if (imageList.length != event.imageID.length) {
+                        debugPrint("エラー：画像データが足りていません");
+                        return;
+                      }
+                      final bool getImage = await FileDownloader()
+                          .fileDownloader(imageList, false);
+                      if (!getImage) {
+                        debugPrint("エラー：ダウンロードに失敗しました");
+                        return;
+                      }
+                    } else {
+                      debugPrint("今回は画像は使わないぜ");
+                    }
+                    final bool getModel =
+                        await FileDownloader().fileDownloader(modelList, true);
+                    if (!getModel) {
+                      debugPrint("エラー：ダウンロードに失敗しました");
+                      return;
+                    }
+                    debugPrint("ALL OK");
+                  },
+                  child: const Text("データ取得")),
+              Card(
+                elevation: 20.0,
+                child: AnimatedButton(
+                  width: 200,
+                  height: 70,
+                  borderRadius: 12,
+                  text: 'イベントに入場！',
+                  isReverse: false,
+                  animationDuration: const Duration(milliseconds: 800),
+                  selectedTextColor: Colors.black,
+                  transitionType: TransitionType.LEFT_TOP_ROUNDER,
+                  backgroundColor: const Color.fromARGB(255, 171, 242, 220),
+                  selectedGradientColor: LinearGradient(
+                    begin: FractionalOffset.topLeft,
+                    end: FractionalOffset.bottomRight,
+                    colors: [
+                      const Color(0xffe4a972).withOpacity(0.8),
+                      const Color(0xff9941d8).withOpacity(0.7),
+                    ],
+                  ),
+                  textStyle: GoogleFonts.nunito(
+                      fontSize: 18,
+                      letterSpacing: 5,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w400),
+                  onPress: () {},
+                ),
+              ),
             ],
           )),
     );
