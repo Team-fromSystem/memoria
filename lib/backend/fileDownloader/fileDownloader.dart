@@ -5,15 +5,27 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
+class FileManager {
+  final int id;
+  final String url;
+  final String name;
+  final String format;
+  FileManager(
+      {required this.id,
+      required this.url,
+      required this.name,
+      required this.format});
+}
+
 class FileDownloader {
   Future<bool> fileDownloader(
-      List<FileManager> fileList, bool isModelTraget) async {
+      List<FileManager> fileList, bool isModelTarget) async {
     FirebaseStorage storage = FirebaseStorage.instance;
+    final appDocDir = await getApplicationDocumentsDirectory();
     for (var fileManager in fileList) {
       final httpsRef = storage.refFromURL(fileManager.url);
-      final appDocDir = await getApplicationDocumentsDirectory();
 
-      final String type = isModelTraget ? "model" : "image";
+      final String type = isModelTarget ? "model" : "image";
       final filePath =
           "${appDocDir.path}/$type/${fileManager.name}${fileManager.id}.${fileManager.format}";
       final file = File(filePath);
@@ -76,16 +88,29 @@ class FileDownloader {
     // var aaa = modelManagerList.isNotEmpty ? true : false;
     return modelManagerList;
   }
-}
 
-class FileManager {
-  final int id;
-  final String url;
-  final String name;
-  final String format;
-  FileManager(
-      {required this.id,
-      required this.url,
-      required this.name,
-      required this.format});
+  Future<bool> checkFilesExist(
+      List<int> modelIDList, List<int> imageIDList) async {
+    final modelFileList = await getfileURL(modelIDList, true);
+    final imageFileList = await getfileURL(imageIDList, false);
+    final appDocDir = await getApplicationDocumentsDirectory();
+
+    for (var fileManager in modelFileList) {
+      final filePath =
+          "${appDocDir.path}/model/${fileManager.name}${fileManager.id}.${fileManager.format}";
+      if (!File(filePath).existsSync()) {
+        debugPrint("filePath:{$filePath}が存在しません");
+        return false;
+      }
+    }
+    for (var fileManager in imageFileList) {
+      final filePath =
+          "${appDocDir.path}/image/${fileManager.name}${fileManager.id}.${fileManager.format}";
+      if (!File(filePath).existsSync()) {
+        debugPrint("filePath:{$filePath}が存在しません");
+        return false;
+      }
+    }
+    return true;
+  }
 }
