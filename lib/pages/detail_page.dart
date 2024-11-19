@@ -2,26 +2,48 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:location/location.dart';
 import 'package:memoria/backend/fileDownloader/fileDownloader.dart';
 import 'package:memoria/backend/models/event.dart';
+import 'package:memoria/backend/provider/booked_list.dart';
+import 'package:memoria/backend/provider/favorite_list.dart';
 import 'package:memoria/common/dialogs.dart';
+import 'package:memoria/common/image_viewer_overlay.dart';
 import 'package:memoria/utils/location_checker.dart';
 import 'package:memoria/utils/location_permission_request.dart';
 import 'package:memoria/utils/weekday_converter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class DetailPage extends StatelessWidget {
+class DetailPage extends HookConsumerWidget {
   final Event event;
   const DetailPage({super.key, required this.event});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final Size screenSize = MediaQuery.of(context).size;
     final double screenWidth = screenSize.width;
     final List<String> eventLocation = event.location.split('/');
     final Location location = Location();
+    final OverlayPortalController overlayPortalController =
+        OverlayPortalController();
+    final favoriteList = ref.watch(favoriteListNotifierProvider);
+    final bookedList = ref.watch(bookedListNotifierProvider);
+
+    // ref.listen(favoriteListNotifierProvider, (oldState, newState) {
+    //   debugPrint("brrfore  ${oldState?.length ?? 0}");
+    //   debugPrint("after  ${newState.length}");
+    //   if ((oldState?.length ?? 0) < newState.length) {
+    //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    //         duration: const Duration(milliseconds: 1000),
+    //         content: Text("${newState.last.title} がfavoriteに追加されました！")));
+    //     return;
+    //   }
+    //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    //       duration: Duration(milliseconds: 1000),
+    //       content: Text("favoriteから要素が削除されました")));
+    // });
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(253, 235, 234, 238),
       extendBodyBehindAppBar: true,
@@ -126,14 +148,50 @@ class DetailPage extends StatelessWidget {
           const Padding(padding: EdgeInsets.only(right: 10)),
         ],
       ),
-      // floatingActionButton: FloatingActionButton(
-      //     elevation: 5.0,
-      //     child: const Icon(Icons.camera),
-      //     onPressed: () async {}),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          FloatingActionButton(
+              heroTag: 'uniqueTag1',
+              elevation: 5.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: bookedList.any((value) => value == event)
+                  ? const Icon(
+                      size: 32, color: Colors.greenAccent, Icons.bookmark)
+                  : const Icon(size: 32, Icons.bookmark_add_outlined),
+              onPressed: () {
+                final bookedNotifier =
+                    ref.read(bookedListNotifierProvider.notifier);
+                bookedNotifier.toggleBook(event, context);
+              }),
+          const Padding(padding: EdgeInsets.only(top: 16)),
+          FloatingActionButton(
+              heroTag: 'uniqueTag2',
+              elevation: 5.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: favoriteList.any((value) => value == event)
+                  ? const Icon(size: 34, color: Colors.red, Icons.favorite)
+                  : const Icon(size: 32, Icons.favorite_border),
+              onPressed: () {
+                final favNotifier =
+                    ref.read(favoriteListNotifierProvider.notifier);
+                favNotifier.toggleFavorite(event, context);
+              }),
+          const Padding(padding: EdgeInsets.only(top: 20)),
+        ],
+      ),
       body: SingleChildScrollView(
           padding: const EdgeInsets.only(top: 100),
           child: Column(
             children: [
+              ImageViewerOverlay(
+                  imageURL: event.bannerURL,
+                  controller: overlayPortalController,
+                  lootContext: context),
               Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
@@ -146,7 +204,9 @@ class DetailPage extends StatelessWidget {
                         )
                       ]),
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      overlayPortalController.show();
+                    },
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: CachedNetworkImage(

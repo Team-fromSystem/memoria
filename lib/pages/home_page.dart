@@ -1,156 +1,13 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:memoria/backend/models/event.dart';
+import 'package:memoria/backend/provider/booked_list.dart';
+import 'package:memoria/backend/provider/favorite_list.dart';
 import 'package:memoria/backend/provider/provider_event.dart';
-import 'package:memoria/pages/detail_page.dart';
+import 'package:memoria/common/banner_card.dart';
+import 'package:memoria/common/booked_card.dart';
+import 'package:memoria/common/favorite_card.dart' as prefix;
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-
-class TestImage extends StatelessWidget {
-  const TestImage({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: const [
-              BoxShadow(
-                color: Color.fromARGB(95, 0, 0, 0),
-                offset: Offset(0, 2),
-                blurRadius: 3,
-                spreadRadius: 0.2,
-              )
-            ]),
-        child: GestureDetector(
-          // onTap: () {
-          //   Navigator.push(
-          //     context,
-          //     MaterialPageRoute(builder: (context) => const DetailPage()),
-          //   );
-          // },
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.asset('assets/images/natumaturi.jpeg'),
-          ),
-        ));
-  }
-}
-
-class BannerImage extends StatelessWidget {
-  final Event event;
-  const BannerImage({super.key, required this.event});
-  @override
-  Widget build(BuildContext context) {
-    //final db = AppConst.db;
-    //final eventDocRef = db.collection('events').doc("unNj4aBymMVAMtLMxM58");
-
-    return Card(
-        child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color.fromARGB(95, 0, 0, 0),
-                    offset: Offset(0, 2),
-                    blurRadius: 3,
-                    spreadRadius: 0.2,
-                  )
-                ]),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) => DetailPage(
-                            event: event,
-                          )),
-                );
-              },
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: CachedNetworkImage(
-                  imageUrl: event.bannerURL,
-                  progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      CircularProgressIndicator(
-                          value: downloadProgress.progress),
-                ),
-              ),
-            )));
-  }
-}
-
-class BookedCard extends StatelessWidget {
-  const BookedCard({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Stack(clipBehavior: Clip.none, children: [
-      Container(
-          width: 150,
-          height: 264,
-          padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
-          margin: const EdgeInsets.only(top: 4),
-          clipBehavior: Clip.none,
-          decoration: BoxDecoration(
-              color: Colors.grey[50],
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color.fromARGB(95, 0, 0, 0),
-                  offset: Offset(0, 2),
-                  blurRadius: 3,
-                  spreadRadius: 0.2,
-                )
-              ]),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.asset('assets/images/natumaturi.jpeg'),
-              ),
-              const Padding(
-                padding: EdgeInsets.only(top: 5),
-              ),
-              RichText(
-                  text: const TextSpan(
-                      text: " location",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 18),
-                      children: <TextSpan>[
-                    TextSpan(text: "\n"),
-                    TextSpan(
-                      text: " sub",
-                      style: TextStyle(color: Color(0xff333333), fontSize: 18),
-                    ),
-                  ]))
-            ],
-          )),
-      Positioned(
-          top: 0,
-          left: 70,
-          child: Container(
-            height: 8,
-            width: 8,
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(60),
-            ),
-            child: null,
-          )),
-    ]);
-  }
-}
-
-class FavCard extends StatelessWidget {
-  const FavCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: Image.asset('assets/images/natumaturi.jpeg'),
-    );
-  }
-}
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -161,6 +18,8 @@ class HomePage extends HookConsumerWidget {
     double screenWidth = screenSize.width;
 
     final eventList = ref.watch(eventProvider);
+    final favoriteList = ref.watch(favoriteListNotifierProvider);
+    final bookedList = ref.watch(bookedListNotifierProvider);
     final infoCardTitle = useState("");
     final infoCardCC = useState("");
     final infoCardDescription = useState("");
@@ -226,7 +85,7 @@ class HomePage extends HookConsumerWidget {
                   AsyncData(:final value) => CarouselSlider.builder(
                       itemCount: value.length,
                       itemBuilder: (context, index, realIndex) {
-                        return BannerImage(event: value[index]);
+                        return BannerCard(event: value[index]);
                       },
                       options: CarouselOptions(
                         aspectRatio: 0.89,
@@ -253,9 +112,7 @@ class HomePage extends HookConsumerWidget {
                 },
               ],
             ),
-
             const Padding(padding: EdgeInsets.only(top: 200)),
-
             Container(
                 decoration: BoxDecoration(
                   color: const Color.fromARGB(179, 235, 234, 238),
@@ -294,13 +151,12 @@ class HomePage extends HookConsumerWidget {
                     SizedBox(
                       width: double.maxFinite,
                       height: 270,
-                      //color: Colors.red,
                       child: ListView.separated(
                         padding: const EdgeInsets.only(right: 100),
                         scrollDirection: Axis.horizontal,
-                        itemCount: 6,
+                        itemCount: bookedList.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return const BookedCard();
+                          return BookedCard(event: bookedList[index]);
                         },
                         separatorBuilder: (context, index) {
                           return const SizedBox(
@@ -347,27 +203,33 @@ class HomePage extends HookConsumerWidget {
                       ],
                     ),
                     Container(
-                      //color: Colors.black,
                       padding: const EdgeInsets.only(left: 6, right: 16),
                       width: double.maxFinite,
                       height: 400,
                       child: GridView.builder(
-                        //padding: EdgeInsets.only(left: 10),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 3,
                                 childAspectRatio: 0.7,
                                 mainAxisSpacing: 12,
                                 crossAxisSpacing: 4),
-                        itemCount: 10,
+                        itemCount: favoriteList.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return const TestImage();
+                          return FavoriteCard(
+                            event: favoriteList[index],
+                          );
                         },
                       ),
                     ),
                   ],
                 )),
-            //FavCard(),
+            // const ExpansionTile(
+            //   title: Text('親アイテム'),
+            //   children: <Widget>[
+            //     ListTile(title: Text('子アイテム1')),
+            //     ListTile(title: Text('子アイテム2')),
+            //   ],
+            // )
           ],
         ));
     //);
