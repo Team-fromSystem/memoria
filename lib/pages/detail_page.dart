@@ -158,8 +158,7 @@ class DetailPage extends HookConsumerWidget {
                 borderRadius: BorderRadius.circular(40),
               ),
               child: bookedList.any((value) => value == event)
-                  ? const Icon(
-                      size: 32, color: Colors.greenAccent, Icons.bookmark)
+                  ? Icon(size: 34, color: Colors.teal[600], Icons.bookmark)
                   : const Icon(size: 32, Icons.bookmark_add_outlined),
               onPressed: () {
                 final bookedNotifier =

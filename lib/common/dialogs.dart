@@ -96,6 +96,9 @@ class Dialogs {
                     return;
                   }
                   debugPrint("ALL OK");
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      duration: const Duration(milliseconds: 1000),
+                      content: Text("${event.title} のデータのダウンロードが完了しました")));
                 },
               ),
             ),

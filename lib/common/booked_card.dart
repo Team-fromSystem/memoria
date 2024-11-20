@@ -23,7 +23,7 @@ class BookedCard extends StatelessWidget {
         },
         child: Container(
             width: 150,
-            height: 264,
+            height: 280,
             padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
             margin: const EdgeInsets.only(top: 4),
             clipBehavior: Clip.none,
@@ -83,42 +83,5 @@ class BookedCard extends StatelessWidget {
             child: null,
           )),
     ]);
-  }
-}
-
-class FavoriteCard extends StatelessWidget {
-  final Event event;
-  const FavoriteCard({super.key, required this.event});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: const [
-              BoxShadow(
-                color: Color.fromARGB(95, 0, 0, 0),
-                offset: Offset(0, 2),
-                blurRadius: 3,
-                spreadRadius: 0.2,
-              )
-            ]),
-        child: GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => DetailPage(
-                          event: event,
-                        )),
-              );
-            },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: CachedNetworkImage(
-                imageUrl: event.bannerURL,
-                progressIndicatorBuilder: (context, url, downloadProgress) =>
-                    CircularProgressIndicator(value: downloadProgress.progress),
-              ),
-            )));
   }
 }
