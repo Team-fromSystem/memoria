@@ -2,26 +2,50 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:location/location.dart';
 import 'package:memoria/backend/fileDownloader/fileDownloader.dart';
 import 'package:memoria/backend/models/event.dart';
+import 'package:memoria/backend/provider/booked_list.dart';
+import 'package:memoria/backend/provider/favorite_list.dart';
 import 'package:memoria/common/dialogs.dart';
+import 'package:memoria/common/image_viewer_overlay.dart';
 import 'package:memoria/utils/location_checker.dart';
 import 'package:memoria/utils/location_permission_request.dart';
 import 'package:memoria/utils/weekday_converter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class DetailPage extends StatelessWidget {
+class DetailPage extends HookConsumerWidget {
   final Event event;
   const DetailPage({super.key, required this.event});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final Size screenSize = MediaQuery.of(context).size;
     final double screenWidth = screenSize.width;
     final List<String> eventLocation = event.location.split('/');
     final Location location = Location();
+    final OverlayPortalController overlayPortalController =
+        OverlayPortalController();
+    final favoriteList = ref.watch(favoriteListNotifierProvider);
+    final bookedList = ref.watch(bookedListNotifierProvider);
+    final isMapImage = useState<bool>(false);
+
+    // ref.listen(favoriteListNotifierProvider, (oldState, newState) {
+    //   debugPrint("brrfore  ${oldState?.length ?? 0}");
+    //   debugPrint("after  ${newState.length}");
+    //   if ((oldState?.length ?? 0) < newState.length) {
+    //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    //         duration: const Duration(milliseconds: 1000),
+    //         content: Text("${newState.last.title} がfavoriteに追加されました！")));
+    //     return;
+    //   }
+    //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+    //       duration: Duration(milliseconds: 1000),
+    //       content: Text("favoriteから要素が削除されました")));
+    // });
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(253, 235, 234, 238),
       extendBodyBehindAppBar: true,
@@ -60,7 +84,9 @@ class DetailPage extends StatelessWidget {
             child: IconButton(
                 iconSize: 32,
                 onPressed: () async {
-                  await Dialogs.checkFile(context, event);
+                  final bool isFilesExist = await FileDownloader()
+                      .checkFilesExist(event.modelID, event.imageID);
+                  await Dialogs.fileChecker(context, event, isFilesExist);
                 },
                 icon: const Icon(CupertinoIcons.cloud_download)),
           ),
@@ -78,6 +104,7 @@ class DetailPage extends StatelessWidget {
               borderRadius: BorderRadius.circular(50),
             ),
             child: AnimatedButton(
+              isReverse: true,
               width: 90,
               height: 54,
               borderRadius: 50,
@@ -88,7 +115,7 @@ class DetailPage extends StatelessWidget {
                   letterSpacing: 2,
                   color: Color.fromARGB(205, 0, 0, 0),
                   fontWeight: FontWeight.w100),
-              animationDuration: const Duration(milliseconds: 800),
+              animationDuration: const Duration(milliseconds: 2500),
               selectedTextColor: Colors.black,
               transitionType: TransitionType.LEFT_TOP_ROUNDER,
               //backgroundColor: const Color.fromARGB(255, 171, 242, 220),
@@ -108,65 +135,64 @@ class DetailPage extends StatelessWidget {
                   const Color(0xff9941d8).withOpacity(0.8),
                 ],
               ),
-              onPress: () {},
+              onPress: () async {
+                final bool isFilesExist = await FileDownloader()
+                    .checkFilesExist(event.modelID, event.imageID);
+                final bool isRequeatGranted =
+                    await RequestLocationPermission.request(location).isGranted;
+                final bool isInsideArea =
+                    await GetLocation.checkEventArea(location, event);
+                await Dialogs.arChecker(
+                    context, isFilesExist, isRequeatGranted, isInsideArea);
+              },
             ),
           ),
           const Padding(padding: EdgeInsets.only(right: 10)),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-          elevation: 5.0,
-          child: const Icon(Icons.camera),
-          onPressed: () async {
-            if (await RequestLocationPermission.request(location).isDenied) {
-              await showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('位置情報リクエストが拒否されました'),
-                    content: const Text('ARコンテンツを使用するためは許可が必要です。'),
-                    actions: <Widget>[
-                      TextButton(
-                        child: const Text('OK'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-              return;
-            }
-            if (!await GetLocation.checkEventArea(location, event)) {
-              debugPrint("イベント範囲外です");
-              await showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('このイベントの開催エリア外です'),
-                    content: const Text('AR'),
-                    actions: <Widget>[
-                      TextButton(
-                        child: const Text('OK'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-              return;
-            } else {
-              debugPrint("unityWidgetへ");
-              //TODO unityWidgetへ遷移
-            }
-          }),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          FloatingActionButton(
+              heroTag: 'uniqueTag1',
+              elevation: 5.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: bookedList.any((value) => value == event)
+                  ? Icon(size: 34, color: Colors.teal[600], Icons.bookmark)
+                  : const Icon(size: 32, Icons.bookmark_add_outlined),
+              onPressed: () {
+                final bookedNotifier =
+                    ref.read(bookedListNotifierProvider.notifier);
+                bookedNotifier.toggleBook(event, context);
+              }),
+          const Padding(padding: EdgeInsets.only(top: 16)),
+          FloatingActionButton(
+              heroTag: 'uniqueTag2',
+              elevation: 5.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: favoriteList.any((value) => value == event)
+                  ? const Icon(size: 34, color: Colors.red, Icons.favorite)
+                  : const Icon(size: 32, Icons.favorite_border),
+              onPressed: () {
+                final favNotifier =
+                    ref.read(favoriteListNotifierProvider.notifier);
+                favNotifier.toggleFavorite(event, context);
+              }),
+          const Padding(padding: EdgeInsets.only(top: 20)),
+        ],
+      ),
       body: SingleChildScrollView(
           padding: const EdgeInsets.only(top: 100),
           child: Column(
             children: [
+              ImageViewerOverlay(
+                  imageURL: isMapImage.value ? event.mapURL : event.bannerURL,
+                  controller: overlayPortalController,
+                  lootContext: context),
               Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
@@ -178,8 +204,12 @@ class DetailPage extends StatelessWidget {
                           spreadRadius: 0.2,
                         )
                       ]),
+                  //TODO
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      isMapImage.value = false;
+                      overlayPortalController.show();
+                    },
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: CachedNetworkImage(
@@ -281,53 +311,116 @@ class DetailPage extends StatelessWidget {
                       ]),
                   width: screenWidth,
                   margin: const EdgeInsets.fromLTRB(10, 3, 10, 16),
-                  padding: const EdgeInsets.only(left: 20, top: 16, right: 20),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      RichText(
-                          text: TextSpan(
-                              text: eventLocation[0],
-                              style: const TextStyle(
-                                  height: 1.1,
-                                  color: Color(0xff333333),
-                                  fontSize: 26),
-                              children: <TextSpan>[
-                            const TextSpan(text: "\n"),
-                            TextSpan(
-                              text: eventLocation[1],
-                              style: const TextStyle(
-                                  color: Color(0xff333333), fontSize: 26),
-                            ),
-                            const TextSpan(text: "\n"),
-                            TextSpan(
-                              text: eventLocation[2],
-                              style: const TextStyle(
-                                  color: Color(0xff333333),
-                                  fontSize: 22,
-                                  height: 2),
-                            ),
-                          ])),
-                      const Divider(
-                        thickness: 1.5,
-                      ),
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text("会場付近のmapを表示",
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Color.fromARGB(255, 140, 140, 144))),
-                          IconButton(
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            onPressed: null,
-                            icon: Icon(
-                              Icons.keyboard_arrow_down,
-                              size: 34,
-                            ),
+                      Container(
+                          padding: const EdgeInsets.only(
+                              left: 20, top: 16, right: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              RichText(
+                                  text: TextSpan(
+                                      text: eventLocation[0],
+                                      style: const TextStyle(
+                                          height: 1.1,
+                                          color: Color(0xff333333),
+                                          fontSize: 26),
+                                      children: <TextSpan>[
+                                    const TextSpan(text: "\n"),
+                                    TextSpan(
+                                      text: eventLocation[1],
+                                      style: const TextStyle(
+                                          color: Color(0xff333333),
+                                          fontSize: 26),
+                                    ),
+                                    const TextSpan(text: "\n"),
+                                    TextSpan(
+                                      text: eventLocation[2],
+                                      style: const TextStyle(
+                                          color: Color(0xff333333),
+                                          fontSize: 22,
+                                          height: 2),
+                                    ),
+                                  ])),
+                              const Divider(
+                                thickness: 1.5,
+                              ),
+                            ],
+                          )),
+                      Theme(
+                        data: Theme.of(context)
+                            .copyWith(dividerColor: Colors.transparent),
+                        child: ExpansionTile(
+                          initiallyExpanded: false,
+                          maintainState: true,
+                          expandedAlignment: Alignment.center,
+                          backgroundColor: Colors.white,
+                          iconColor: Colors.teal[600],
+                          collapsedIconColor: Colors.black54,
+                          collapsedBackgroundColor: Colors.white,
+                          minTileHeight: 54,
+                          collapsedShape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
                           ),
-                        ],
-                      ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          title: const Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                SizedBox(
+                                  width: 6,
+                                ),
+                                Text("会場付近のmapを表示",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: Color.fromARGB(
+                                            255, 140, 140, 144))),
+                              ]),
+                          expandedCrossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: double.maxFinite,
+                              height: 300,
+                              //TODO
+                              child: GestureDetector(
+                                onTap: () {
+                                  isMapImage.value = true;
+                                  overlayPortalController.show();
+                                },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: CachedNetworkImage(
+                                    imageUrl: event.mapURL,
+                                    progressIndicatorBuilder: (context, url,
+                                            downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        // const Row(
+                        //   mainAxisAlignment: MainAxisAlignment.end,
+                        //   children: [
+                        //     Text("会場付近のmapを表示",
+                        //         style: TextStyle(
+                        //             fontSize: 14,
+                        //             color: Color.fromARGB(255, 140, 140, 144))),
+                        //     IconButton(
+                        //       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        //       onPressed: null,
+                        //       icon: Icon(
+                        //         Icons.keyboard_arrow_down,
+                        //         size: 34,
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
+                      )
                     ],
                   )),
               Container(
@@ -449,71 +542,6 @@ class DetailPage extends StatelessWidget {
                         )),
                   )
                 ],
-              ),
-              TextButton(
-                  onPressed: () async {
-                    if (event.imageID.isEmpty && event.detectType.contains(1)) {
-                      debugPrint("画像トラッキングで使用する画像データが存在しません");
-                      return;
-                    }
-                    final List<FileManager> modelList =
-                        await FileDownloader().getfileURL(event.modelID, true);
-                    if (modelList.length != event.modelID.length) {
-                      debugPrint("エラー：モデルデータが足りていません");
-                      return;
-                    }
-                    if (event.detectType.contains(1)) {
-                      final List<FileManager> imageList = await FileDownloader()
-                          .getfileURL(event.imageID, false);
-                      if (imageList.length != event.imageID.length) {
-                        debugPrint("エラー：画像データが足りていません");
-                        return;
-                      }
-                      final bool getImage = await FileDownloader()
-                          .fileDownloader(imageList, false);
-                      if (!getImage) {
-                        debugPrint("エラー：ダウンロードに失敗しました");
-                        return;
-                      }
-                    } else {
-                      debugPrint("今回は画像は使わないぜ");
-                    }
-                    final bool getModel =
-                        await FileDownloader().fileDownloader(modelList, true);
-                    if (!getModel) {
-                      debugPrint("エラー：ダウンロードに失敗しました");
-                      return;
-                    }
-                    debugPrint("ALL OK");
-                  },
-                  child: const Text("データ取得")),
-              Card(
-                elevation: 20.0,
-                child: AnimatedButton(
-                  width: 200,
-                  height: 70,
-                  borderRadius: 12,
-                  text: 'イベントに入場！',
-                  isReverse: false,
-                  animationDuration: const Duration(milliseconds: 800),
-                  selectedTextColor: Colors.black,
-                  transitionType: TransitionType.LEFT_TOP_ROUNDER,
-                  backgroundColor: const Color.fromARGB(255, 171, 242, 220),
-                  selectedGradientColor: LinearGradient(
-                    begin: FractionalOffset.topLeft,
-                    end: FractionalOffset.bottomRight,
-                    colors: [
-                      const Color(0xffe4a972).withOpacity(0.8),
-                      const Color(0xff9941d8).withOpacity(0.7),
-                    ],
-                  ),
-                  textStyle: GoogleFonts.nunito(
-                      fontSize: 18,
-                      letterSpacing: 5,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w400),
-                  onPress: () {},
-                ),
               ),
             ],
           )),

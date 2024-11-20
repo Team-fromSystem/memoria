@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:memoria/common/bottomBar/account_overlay.dart';
@@ -53,22 +54,22 @@ class BottomNavBar extends HookWidget {
                     Icons.account_circle_outlined,
                     color: Color(0xff555555),
                   ),
-                  title: const Text('"UserName"'),
-                  backgroundColor: Colors.red,
+                  title: const Text('UserName'),
+                  backgroundColor: Colors.green,
                   selectedIcon: const Icon(
                     Icons.account_circle_outlined,
-                    color: Colors.red,
+                    color: Colors.green,
                   ),
                 ),
                 BottomBarItem(
                   icon: const Icon(
-                    Icons.tour_sharp,
+                    CupertinoIcons.ticket,
                     color: Color(0xff555555),
                   ),
-                  title: const Text('Safety Divider'),
+                  title: const Text('トップページ'),
                   backgroundColor: Colors.orange,
                   selectedIcon: const Icon(
-                    Icons.tour_sharp,
+                    CupertinoIcons.tickets_fill,
                     color: Colors.orange,
                   ),
                 ),
@@ -77,7 +78,7 @@ class BottomNavBar extends HookWidget {
                     Icons.search,
                     color: Color(0xff555555),
                   ),
-                  title: const Text('Cabin'),
+                  title: const Text('検索ページ'),
                   backgroundColor: Colors.purple,
                   selectedIcon: const Icon(
                     Icons.search,
