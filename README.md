@@ -14,6 +14,7 @@
 2. [環境](#環境)
 3. [ディレクトリ構成](#ディレクトリ構成)
 4. [開発環境構築](#開発環境構築)
+5. [操作方法](#操作方法)
 
 ## プロジェクト名
 
@@ -52,6 +53,7 @@ unityとの互換性の問題で**flutterのバージョンをfvmを使用して
 
 その他のパッケージのバージョンは pubspec.yaml を参照してください
 
+↓その他細かい情報
 <pre>
 flutter doctor -v
 [√] Flutter (Channel stable, 3.24.4, on Microsoft Windows [Version 10.0.22631.4460], locale en-US)
@@ -103,7 +105,7 @@ flutter doctor -v
 
 <p align="right">(<a href="#top">トップへ</a>)</p>
 
-## ディレクトリ構成
+## ディレクトリ構成(更新予定)
 
 <pre>
 .
@@ -166,5 +168,25 @@ flutter doctor -v
     - `fvm install 3.22.2`
     - `fvm list`
     - `fvm use 3.22.2`
+- `flutter run`が通れば成功！
+
+<p align="right">(<a href="#top">トップへ</a>)</p>
+
+## 操作方法(未完了)
+
+- git clone git@github.com:Team-fromSystem/memoria.git --recursive
+  - サブモジュールのファイルも自動で取得されます。
+  - --recursive をつけ忘れた / サブモジュールのファイルを取得したい場合
+    - git clone に --recursiveを付けないとサブモジュールのファイルが取得されませんが、
+    - git submodule update --init で後からチェックアウトできます。
+    - 引用：https://www.m3tech.blog/entry/git-submodule
+   
+- ターミナルで `flutter doctor -v`
+  - flutterが最新の場合、お好きな方法でバージョンを3.22.2に下げてください
+    - fvmの場合(https://zenn.dev/altiveinc/articles/flutter-version-management#dart%E3%81%A7%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)
+    - `fvm install 3.22.2`
+    - `fvm list`
+    - `fvm use 3.22.2`
+- `flutter run`が通れば成功！
 
 <p align="right">(<a href="#top">トップへ</a>)</p>
