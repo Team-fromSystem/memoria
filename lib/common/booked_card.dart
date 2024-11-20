@@ -23,7 +23,7 @@ class BookedCard extends StatelessWidget {
         },
         child: Container(
             width: 150,
-            height: 280,
+            height: 272,
             padding: const EdgeInsets.fromLTRB(4, 8, 4, 0),
             margin: const EdgeInsets.only(top: 4),
             clipBehavior: Clip.none,

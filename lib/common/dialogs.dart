@@ -201,11 +201,14 @@ class Dialogs {
                 textStyle: GoogleFonts.nunito(
                     fontSize: 16,
                     letterSpacing: 2,
-                    color: Colors.black,
+                    color: isFilesExist && isRequeatGranted && isInsideArea
+                        ? Colors.black
+                        : Colors.black54,
                     fontWeight: FontWeight.w400),
                 isReverse: false,
                 animationDuration: const Duration(milliseconds: 1500),
                 selectedTextColor: Colors.black,
+
                 transitionType: TransitionType.LEFT_TOP_ROUNDER,
                 //backgroundColor: const Color.fromARGB(255, 171, 242, 220),
                 gradient: const LinearGradient(
@@ -224,6 +227,9 @@ class Dialogs {
                     const Color(0xff9941d8).withOpacity(0.7),
                   ],
                 ),
+                animatedOn: isFilesExist && isRequeatGranted && isInsideArea
+                    ? AnimatedOn.onTap
+                    : AnimatedOn.onHover,
                 onPress: () async {
                   if (isFilesExist && isRequeatGranted && isInsideArea) {
                     debugPrint("unityWidgetへ");

@@ -148,7 +148,7 @@ class HomePage extends HookConsumerWidget {
                   children: <Widget>[
                     SizedBox(
                       width: double.maxFinite,
-                      height: 300,
+                      height: 286,
                       child: favoriteList.isEmpty
                           ? const Text(
                               "参加予定は空っぽだよ",

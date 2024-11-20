@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:location/location.dart';
 import 'package:memoria/backend/fileDownloader/fileDownloader.dart';
@@ -29,6 +30,7 @@ class DetailPage extends HookConsumerWidget {
         OverlayPortalController();
     final favoriteList = ref.watch(favoriteListNotifierProvider);
     final bookedList = ref.watch(bookedListNotifierProvider);
+    final isMapImage = useState<bool>(false);
 
     // ref.listen(favoriteListNotifierProvider, (oldState, newState) {
     //   debugPrint("brrfore  ${oldState?.length ?? 0}");
@@ -188,7 +190,7 @@ class DetailPage extends HookConsumerWidget {
           child: Column(
             children: [
               ImageViewerOverlay(
-                  imageURL: event.bannerURL,
+                  imageURL: isMapImage.value ? event.mapURL : event.bannerURL,
                   controller: overlayPortalController,
                   lootContext: context),
               Container(
@@ -202,8 +204,10 @@ class DetailPage extends HookConsumerWidget {
                           spreadRadius: 0.2,
                         )
                       ]),
+                  //TODO
                   child: GestureDetector(
                     onTap: () {
+                      isMapImage.value = false;
                       overlayPortalController.show();
                     },
                     child: ClipRRect(
@@ -307,53 +311,116 @@ class DetailPage extends HookConsumerWidget {
                       ]),
                   width: screenWidth,
                   margin: const EdgeInsets.fromLTRB(10, 3, 10, 16),
-                  padding: const EdgeInsets.only(left: 20, top: 16, right: 20),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      RichText(
-                          text: TextSpan(
-                              text: eventLocation[0],
-                              style: const TextStyle(
-                                  height: 1.1,
-                                  color: Color(0xff333333),
-                                  fontSize: 26),
-                              children: <TextSpan>[
-                            const TextSpan(text: "\n"),
-                            TextSpan(
-                              text: eventLocation[1],
-                              style: const TextStyle(
-                                  color: Color(0xff333333), fontSize: 26),
-                            ),
-                            const TextSpan(text: "\n"),
-                            TextSpan(
-                              text: eventLocation[2],
-                              style: const TextStyle(
-                                  color: Color(0xff333333),
-                                  fontSize: 22,
-                                  height: 2),
-                            ),
-                          ])),
-                      const Divider(
-                        thickness: 1.5,
-                      ),
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text("会場付近のmapを表示",
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Color.fromARGB(255, 140, 140, 144))),
-                          IconButton(
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            onPressed: null,
-                            icon: Icon(
-                              Icons.keyboard_arrow_down,
-                              size: 34,
-                            ),
+                      Container(
+                          padding: const EdgeInsets.only(
+                              left: 20, top: 16, right: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              RichText(
+                                  text: TextSpan(
+                                      text: eventLocation[0],
+                                      style: const TextStyle(
+                                          height: 1.1,
+                                          color: Color(0xff333333),
+                                          fontSize: 26),
+                                      children: <TextSpan>[
+                                    const TextSpan(text: "\n"),
+                                    TextSpan(
+                                      text: eventLocation[1],
+                                      style: const TextStyle(
+                                          color: Color(0xff333333),
+                                          fontSize: 26),
+                                    ),
+                                    const TextSpan(text: "\n"),
+                                    TextSpan(
+                                      text: eventLocation[2],
+                                      style: const TextStyle(
+                                          color: Color(0xff333333),
+                                          fontSize: 22,
+                                          height: 2),
+                                    ),
+                                  ])),
+                              const Divider(
+                                thickness: 1.5,
+                              ),
+                            ],
+                          )),
+                      Theme(
+                        data: Theme.of(context)
+                            .copyWith(dividerColor: Colors.transparent),
+                        child: ExpansionTile(
+                          initiallyExpanded: false,
+                          maintainState: true,
+                          expandedAlignment: Alignment.center,
+                          backgroundColor: Colors.white,
+                          iconColor: Colors.teal[600],
+                          collapsedIconColor: Colors.black54,
+                          collapsedBackgroundColor: Colors.white,
+                          minTileHeight: 54,
+                          collapsedShape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
                           ),
-                        ],
-                      ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          title: const Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                SizedBox(
+                                  width: 6,
+                                ),
+                                Text("会場付近のmapを表示",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: Color.fromARGB(
+                                            255, 140, 140, 144))),
+                              ]),
+                          expandedCrossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: double.maxFinite,
+                              height: 300,
+                              //TODO
+                              child: GestureDetector(
+                                onTap: () {
+                                  isMapImage.value = true;
+                                  overlayPortalController.show();
+                                },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: CachedNetworkImage(
+                                    imageUrl: event.mapURL,
+                                    progressIndicatorBuilder: (context, url,
+                                            downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        // const Row(
+                        //   mainAxisAlignment: MainAxisAlignment.end,
+                        //   children: [
+                        //     Text("会場付近のmapを表示",
+                        //         style: TextStyle(
+                        //             fontSize: 14,
+                        //             color: Color.fromARGB(255, 140, 140, 144))),
+                        //     IconButton(
+                        //       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        //       onPressed: null,
+                        //       icon: Icon(
+                        //         Icons.keyboard_arrow_down,
+                        //         size: 34,
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
+                      )
                     ],
                   )),
               Container(
