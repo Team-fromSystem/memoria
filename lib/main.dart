@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -12,6 +13,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  //TODO エミュレータを使用 デプロイ時には削除？
+  await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
 
   runApp(const ProviderScope(child: MyApp()));
 }
