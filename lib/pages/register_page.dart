@@ -1,15 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:memoria/backend/models/event.dart';
+import 'package:memoria/common/bottomBar/selected_index.dart';
 import 'package:memoria/utils/weekday_converter.dart';
 
-class RegisterPage extends HookWidget {
+class RegisterPage extends HookConsumerWidget {
   const RegisterPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     Size screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
     final db = FirebaseFirestore.instance;
@@ -19,100 +25,87 @@ class RegisterPage extends HookWidget {
     final controllerTitle = useTextEditingController();
     final controllerCC = useTextEditingController();
     final controllerHN = useTextEditingController();
+    final controllerHostID = useTextEditingController();
+    final controllerAreaRadius = useTextEditingController();
+
     final controllerDescription = useTextEditingController();
     final controllerLocation1 = useTextEditingController();
     final controllerLocation2 = useTextEditingController();
     final controllerLocation3 = useTextEditingController();
 
-    Map<String, dynamic> newEvent(
-        String newTitle,
-        String newCatchCopy,
-        String newHostName,
-        String newDescription,
-        String newLocation,
-        DateTime openDateTime,
-        DateTime closeDateTime) {
-      Timestamp openTime = Timestamp.fromDate(openDateTime);
-      Timestamp closeTime = Timestamp.fromDate(closeDateTime);
-      final Map<String, dynamic> geoMap = {
-        "geoPoint": const GeoPoint(0, 0),
-        "geohash": "nohash",
-      };
-
-      final Map<String, dynamic> newEvent = {
-        "bannerURL": "noBannerURL",
-        "catchCopy": newCatchCopy, //
-        "close": closeTime, //
-        "createdAt": Timestamp.now(),
-        "description": newDescription, //
-        "hostID": 0,
-        "imageID": [0],
-        "location": newLocation, //
-        "mapURL": "noMapURL",
-        "modelID": [0],
-        "open": openTime, //
-        "title": newTitle, //
-        "detectType": [0],
-        "geo": geoMap,
-      };
-
-      return newEvent;
-    }
-
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("イベント登録ページ"),
-      ),
-      backgroundColor: const Color.fromARGB(253, 235, 234, 238),
-      floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.save_as_rounded),
-          onPressed: () async {
-            String newLocation =
-                " ${controllerLocation1.text}/${controllerLocation2.text}/${controllerLocation3.text}";
-            DocumentReference docRef = await db.collection("events").add(
-                newEvent(
-                    controllerTitle.text,
-                    controllerCC.text,
-                    controllerHN.text,
-                    controllerDescription.text,
-                    newLocation,
-                    openDateTime.value,
-                    closeDateTime.value));
-            await docRef.collection("Plane").add({
-              "decorationModelID": [0],
-              "mainModelID": [0],
-            });
-            await docRef.collection("Image").add({
-              "imageID": 0,
-              "modelID": 0,
-              "modelPosition": <String, double>{
-                "x": 0,
-                "y": 0,
-                "z": 0,
-              },
-              "modelRotaion": <String, double>{
-                "x": 0,
-                "y": 0,
-                "z": 0,
-              },
-              "modelSize": 1
-            });
-            await docRef.collection("Immersal").add({
-              "immersalMapManager": <String, dynamic>{
-                "mapID": 0,
-                "mapPosition": <String, double>{
-                  "x": 0,
-                  "y": 0,
-                  "z": 0,
-                },
-                "mapRotaion": <String, double>{
-                  "x": 0,
-                  "y": 0,
-                  "z": 0,
-                },
-              },
-              "immersalModelManager": <String, dynamic>{
+        titleTextStyle: const TextStyle(
+            fontSize: 16, color: Colors.black, fontWeight: FontWeight.w500),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(252, 235, 234, 238),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.3),
+                spreadRadius: 1,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(18),
+              bottomRight: Radius.circular(18),
+            ),
+          ),
+        ),
+        toolbarHeight: 70,
+        scrolledUnderElevation: 0,
+        actions: [
+          FloatingActionButton.extended(
+            elevation: 0,
+            label: const Text("作成"),
+            icon: const Icon(Icons.save_as_rounded),
+            onPressed: () async {
+              String newLocation =
+                  " ${controllerLocation1.text}/${controllerLocation2.text}/${controllerLocation3.text}";
+              List<Location> locations = await locationFromAddress(newLocation);
+
+              final GeoPoint geoPoint =
+                  GeoPoint(locations.first.latitude, locations.first.longitude);
+              final String geohash = GeoFirePoint(geoPoint).geohash;
+
+              Map<String, dynamic> geoMap = {
+                "geoPoint": geoPoint,
+                "geohash": geohash,
+              };
+              final List<int> newImageID = [];
+              final List<int> newModelID = [];
+              final List<int> mewDetectType = [];
+              final Event newEvent = Event(
+                  hostID: controllerHostID.text as int,
+                  areaRadius: controllerAreaRadius.text as double,
+                  eventID: "defaultEventID",
+                  bannerURL: "defaultBannerURL",
+                  mapURL: "defaultMapURL",
+                  title: controllerTitle.text,
+                  catchCopy: controllerCC.text,
+                  description: controllerDescription.text,
+                  hostName: controllerHN.text,
+                  location: newLocation,
+                  createdAt: DateTime.now(),
+                  open: openDateTime.value,
+                  close: closeDateTime.value,
+                  imageID: newImageID,
+                  modelID: newModelID,
+                  detectType: mewDetectType,
+                  geo: geoMap);
+              DocumentReference docRef =
+                  await db.collection("events").add(newEvent.toJson());
+              await docRef.collection("Plane").add({
+                "decorationModelID": [0],
+                "mainModelID": [0],
+              });
+              await docRef.collection("Image").add({
+                "imageID": 0,
                 "modelID": 0,
                 "modelPosition": <String, double>{
                   "x": 0,
@@ -125,14 +118,47 @@ class RegisterPage extends HookWidget {
                   "z": 0,
                 },
                 "modelSize": 1
-              },
-              "location": <String, double>{
-                "latitude": 0,
-                "longitude": 0,
-              },
-              "radius": 0
-            });
-          }),
+              });
+              await docRef.collection("Immersal").add({
+                "immersalMapManager": <String, dynamic>{
+                  "mapID": 0,
+                  "mapPosition": <String, double>{
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                  },
+                  "mapRotaion": <String, double>{
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                  },
+                },
+                "immersalModelManager": <String, dynamic>{
+                  "modelID": 0,
+                  "modelPosition": <String, double>{
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                  },
+                  "modelRotaion": <String, double>{
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                  },
+                  "modelSize": 1
+                },
+                "location": <String, double>{
+                  "latitude": 0,
+                  "longitude": 0,
+                },
+                "radius": 0
+              });
+            },
+          ),
+          const Padding(padding: EdgeInsets.only(right: 20))
+        ],
+      ),
+      backgroundColor: const Color.fromARGB(253, 235, 234, 238),
       body: SingleChildScrollView(
           padding: const EdgeInsets.only(top: 32),
           child: Column(
@@ -180,10 +206,19 @@ class RegisterPage extends HookWidget {
                         decoration: const InputDecoration(labelText: "キャッチコピー"),
                         controller: controllerCC,
                       ),
-                      const TextField(
-                        style:
-                            TextStyle(color: Color(0xff333333), fontSize: 26),
-                        decoration: InputDecoration(labelText: "主催者"),
+                      TextField(
+                        decoration: const InputDecoration(labelText: "主催者ID"),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        controller: controllerHostID,
+                      ),
+                      TextField(
+                        decoration: const InputDecoration(labelText: "主催者"),
+                        style: const TextStyle(
+                            color: Color(0xff333333), fontSize: 26),
+                        controller: controllerHN,
                       ),
                       TextField(
                         keyboardType: TextInputType.multiline,
@@ -193,9 +228,7 @@ class RegisterPage extends HookWidget {
                         decoration: const InputDecoration(labelText: "イベント説明"),
                         controller: controllerDescription,
                       ),
-                      const Divider(
-                        thickness: 1.5,
-                      ),
+                      const Padding(padding: EdgeInsets.only(bottom: 20))
                     ],
                   )),
               Container(
@@ -246,6 +279,15 @@ class RegisterPage extends HookWidget {
                             color: Color(0xff333333), fontSize: 22),
                         decoration: const InputDecoration(labelText: "住所"),
                         controller: controllerLocation3,
+                      ),
+                      TextField(
+                        decoration:
+                            const InputDecoration(labelText: "イベントエリア半径(メートル)"),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        controller: controllerAreaRadius,
                       ),
                       const Divider(
                         thickness: 1.5,
@@ -503,7 +545,7 @@ class RegisterPage extends HookWidget {
               ),
               const SizedBox(
                 height: 300,
-              )
+              ),
             ],
           )),
     );

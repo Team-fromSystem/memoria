@@ -19,29 +19,63 @@ class ImageViewerOverlay extends StatelessWidget {
     return OverlayPortal(
       controller: controller,
       overlayChildBuilder: (lootContext) {
-        return Stack(children: [
-          GestureDetector(
-            onTap: () => controller.hide(),
-            child: Container(
+        return Stack(
+          children: [
+            InteractiveViewer(
+                child: Container(
               width: screenWidth,
               height: screenHeight,
               decoration: const BoxDecoration(
                 color: Color.fromARGB(100, 0, 0, 0),
               ),
-            ),
-          ),
-          Column(children: [
-            const Padding(padding: EdgeInsets.only(top: 100)),
-            InteractiveViewer(
-              clipBehavior: Clip.none,
               child: CachedNetworkImage(
+                width: screenWidth,
+                height: screenHeight,
                 imageUrl: imageURL,
                 progressIndicatorBuilder: (context, url, downloadProgress) =>
                     CircularProgressIndicator(value: downloadProgress.progress),
               ),
-            )
-          ])
-        ]);
+            )),
+            IconButton(
+                onPressed: () {
+                  controller.hide();
+                },
+                icon: const Padding(
+                  padding: EdgeInsets.fromLTRB(10, 60, 0, 0),
+                  child: Icon(
+                    Icons.close,
+                    size: 36,
+                    color: Colors.white,
+                  ),
+                )),
+          ],
+        );
+
+        // Stack(children: [
+        //   GestureDetector(
+        //     onTap: () => controller.hide(),
+        //     child: Container(
+        //       width: screenWidth,
+        //       height: screenHeight,
+        //       decoration: const BoxDecoration(
+        //         color: Color.fromARGB(100, 0, 0, 0),
+        //       ),
+        //     ),
+        //   ),
+        //   Column(children: [
+        //     //const Padding(padding: EdgeInsets.only(top: 100)),
+        //     InteractiveViewer(
+        //       clipBehavior: Clip.none,
+        //       child: CachedNetworkImage(
+        //         width: screenWidth,
+        //         height: screenHeight,
+        //         imageUrl: imageURL,
+        //         progressIndicatorBuilder: (context, url, downloadProgress) =>
+        //             CircularProgressIndicator(value: downloadProgress.progress),
+        //       ),
+        //     )
+        //   ])
+        // ]);
       },
     );
   }

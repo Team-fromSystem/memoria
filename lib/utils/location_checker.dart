@@ -11,16 +11,18 @@ class GetLocation {
     return currentLocation;
   }
 
-  static Future<List<String>> getNearbyEvents(GeoFirePoint centerPoint) async {
+  static Future<List<String>> getNearbyEvents(
+      GeoFirePoint centerPoint, double areaRadius) async {
     final db = FirebaseFirestore.instance;
     final CollectionReference collectionReference = db.collection('events');
     final List<DocumentSnapshot> snapshotList;
     final nearbyEventList = <String>[];
+
     try {
       snapshotList =
           await GeoCollectionReference(collectionReference).fetchWithin(
         center: centerPoint,
-        radiusInKm: 1,
+        radiusInKm: areaRadius / 1000,
         field: 'geo',
         geopointFrom: (data) => ((data as Map<String, dynamic>)['geo']
             as Map<String, dynamic>)['geoPoint'] as GeoPoint,
@@ -50,7 +52,8 @@ class GetLocation {
         centerLocationData.longitude ?? 0.0));
     debugPrint(
         "${centerGeoFirePoint.data['geopoint'].latitude}\n${centerGeoFirePoint.data['geopoint'].longitude}");
-    final nearbyEventList = await getNearbyEvents(centerGeoFirePoint);
+    final nearbyEventList =
+        await getNearbyEvents(centerGeoFirePoint, event.areaRadius);
 
     if (nearbyEventList.isEmpty) {
       debugPrint("どのイベントの開催エリア内でもない");

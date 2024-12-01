@@ -16,103 +16,114 @@ class HomePage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     Size screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
+    double screenHeight = screenSize.height;
 
     final eventList = ref.watch(eventProvider);
     final favoriteList = ref.watch(favoriteListNotifierProvider);
     final bookedList = ref.watch(bookedListNotifierProvider);
-    final infoCardTitle = useState("memoria(メモリア)へようこそ！");
-    final infoCardCC = useState("イベントバナーをタップして\n入場、参加予定、いいねなどができます。   enjoy!");
-    final infoCardDescription = useState("");
+    final currentEventIndex = useState<int>(0);
 
     return SingleChildScrollView(
         padding: const EdgeInsets.only(top: 32),
         child: Column(
           children: [
-            Stack(
-              alignment: Alignment.topCenter,
-              clipBehavior: Clip.none,
-              children: [
-                Positioned(
-                  left: screenWidth / 8,
-                  child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        color: const Color.fromARGB(179, 235, 234, 238),
-                      ),
-                      margin: const EdgeInsets.only(top: 40),
-                      padding: const EdgeInsets.only(top: 425),
-                      height: 607,
-                      width: 330,
+            switch (eventList) {
+              AsyncData(:final value) => Stack(
+                  alignment: Alignment.topCenter,
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      left: screenWidth / 8,
                       child: Container(
-                        alignment: Alignment.topLeft,
-                        width: double.infinity,
-                        padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
-                        margin: const EdgeInsets.fromLTRB(12, 0, 12, 0),
-                        decoration: const BoxDecoration(
-                            border: Border(
-                                top: BorderSide(
-                                    width: 1, color: Color(0xff888888)))),
-                        child: RichText(
-                            text: TextSpan(
-                                text: infoCardTitle.value,
-                                style: const TextStyle(
-                                    color: Color(0xff333333),
-                                    fontSize: 28,
-                                    height: 1.05),
-                                children: <TextSpan>[
-                              const TextSpan(text: "\n"),
-                              TextSpan(
-                                text: infoCardCC.value,
-                                style: const TextStyle(
-                                    color: Color(0xff333333),
-                                    fontSize: 20,
-                                    height: 1.4),
-                              ),
-                              const TextSpan(text: "\n"),
-                              TextSpan(
-                                text: infoCardDescription.value.length <= 56
-                                    ? "\n${infoCardDescription.value.replaceAll('\\n', '\n')}"
-                                    : "\n${infoCardDescription.value.replaceAll('\\n', '\n').substring(0, 55)}…",
-                                style: const TextStyle(
-                                    color: Color(0xff333333),
-                                    fontSize: 16,
-                                    height: 1.1),
-                              ),
-                            ])),
-                      )),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            color: const Color.fromARGB(255, 238, 238, 238),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color.fromARGB(40, 0, 0, 0),
+                                offset: Offset(0, 3),
+                                blurRadius: 3,
+                                spreadRadius: 1.2,
+                              )
+                            ]),
+                        margin: EdgeInsets.only(
+                            top: screenHeight / 24, left: 0, right: 0),
+                        padding: EdgeInsets.only(
+                            top: (screenHeight * 2 / 3) * 3 / 4),
+                        height: screenHeight * 31 / 48,
+                        width: screenWidth * 4 / 5,
+                      ),
+                    ),
+                    Positioned(
+                        child: Column(
+                      children: <Widget>[
+                        CarouselSlider.builder(
+                            itemCount: value.length,
+                            itemBuilder: (context, index, realIndex) {
+                              return BannerCard(event: value[index]);
+                            },
+                            options: CarouselOptions(
+                              aspectRatio: 0.89,
+                              autoPlayInterval: const Duration(seconds: 14),
+                              initialPage: 0,
+                              autoPlay: true,
+                              animateToClosest: false,
+                              enlargeFactor: 1,
+                              viewportFraction: 0.822,
+                              enableInfiniteScroll: true,
+                              autoPlayAnimationDuration:
+                                  const Duration(milliseconds: 1000),
+                              onPageChanged: (index, reason) {
+                                currentEventIndex.value = index;
+                              },
+                            )),
+                        Container(
+                            alignment: Alignment.topLeft,
+                            height: screenHeight / 6,
+                            padding: const EdgeInsets.fromLTRB(6, 8, 6, 6),
+                            margin: EdgeInsets.fromLTRB(
+                                screenWidth / 8, 4, screenWidth / 14, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                const Divider(
+                                    height: 1, color: Color(0xff888888)),
+                                const Padding(
+                                    padding: EdgeInsets.only(top: 10)),
+                                Text(value[currentEventIndex.value].title,
+                                    style: const TextStyle(
+                                        color: Color(0xff333333),
+                                        fontSize: 28,
+                                        height: 1.05)),
+                                FittedBox(
+                                  child: Flexible(
+                                    child: Text(
+                                        value[currentEventIndex.value]
+                                            .catchCopy,
+                                        style: const TextStyle(
+                                            color: Color(0xff333333),
+                                            fontSize: 20,
+                                            height: 1.4)),
+                                  ),
+                                ),
+                                Expanded(
+                                    child: Text(
+                                  value[currentEventIndex.value]
+                                      .description
+                                      .replaceAll('\\n', '\n'),
+                                  overflow: TextOverflow.fade,
+                                  //maxLines: 3
+                                ))
+                              ],
+                            ))
+                      ],
+                    ))
+                  ],
                 ),
-                switch (eventList) {
-                  AsyncData(:final value) => CarouselSlider.builder(
-                      itemCount: value.length,
-                      itemBuilder: (context, index, realIndex) {
-                        return BannerCard(event: value[index]);
-                      },
-                      options: CarouselOptions(
-                        aspectRatio: 0.89,
-                        autoPlayInterval: const Duration(seconds: 14),
-                        //height: h, //高さ
-                        //enlargeCenterPage: true,
-                        //enlargeStrategy: CenterPageEnlargeStrategy.scale,
-                        initialPage: 0, //最初に表示されるページ
-                        autoPlay: true, //自動でスライドしてくれるか
-                        animateToClosest: false,
-                        enlargeFactor: 1,
-                        viewportFraction: 0.822, //各カードの表示される範囲の割合
-                        enableInfiniteScroll: true, //最後のカードから最初のカードへの遷移
-                        autoPlayAnimationDuration: const Duration(
-                            milliseconds: 1000), //スライドが始まって終わるまでの時間),
-                        onPageChanged: (index, reason) {
-                          infoCardTitle.value = value[index].title;
-                          infoCardCC.value = value[index].catchCopy;
-                          infoCardDescription.value = value[index].description;
-                        },
-                      )),
-                  AsyncError(:final error) => Text('Riverpod Error:$error'),
-                  _ => const CircularProgressIndicator(),
-                },
-              ],
-            ),
-            const Padding(padding: EdgeInsets.only(top: 200)),
+              AsyncError(:final error) => Text('Riverpod Error:$error'),
+              _ => const CircularProgressIndicator(),
+            },
+            Padding(padding: EdgeInsets.only(top: screenHeight / 18)),
             Container(
               margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
               child: Theme(
@@ -150,10 +161,12 @@ class HomePage extends HookConsumerWidget {
                       width: double.maxFinite,
                       height: 286,
                       child: favoriteList.isEmpty
-                          ? const Text(
-                              "参加予定は空っぽだよ",
+                          ? const FittedBox(
+                              child: Expanded(
+                                  child: Text(
+                              "イベントは未登録です…",
                               style: TextStyle(height: 5, fontSize: 30),
-                            )
+                            )))
                           : ListView.separated(
                               padding:
                                   const EdgeInsets.only(right: 100, left: 12),
@@ -211,10 +224,12 @@ class HomePage extends HookConsumerWidget {
                       width: double.maxFinite,
                       height: 400,
                       child: favoriteList.isEmpty
-                          ? const Text(
-                              "favoriteは空っぽだよ",
+                          ? const FittedBox(
+                              child: Expanded(
+                                  child: Text(
+                              "イベントは未登録です…",
                               style: TextStyle(height: 5, fontSize: 30),
-                            )
+                            )))
                           : GridView.builder(
                               gridDelegate:
                                   const SliverGridDelegateWithFixedCrossAxisCount(
@@ -237,6 +252,5 @@ class HomePage extends HookConsumerWidget {
             const Padding(padding: EdgeInsets.only(bottom: 100))
           ],
         ));
-    //);
   }
 }

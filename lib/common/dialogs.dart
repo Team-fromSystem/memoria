@@ -16,7 +16,11 @@ class Dialogs {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               const Text(
-                  '・ARコンテンツで使用するデータをダウンロードします。\n・3Dモデル、画像トラッキング用の画像を含みます。\n・Wi-Fi環境下でのダウンロードを推奨します。'),
+                '・ARコンテンツで使用するデータをダウンロードします。\n・3Dモデル、画像トラッキング用の画像を含みます。\n・Wi-Fi環境下でのダウンロードを推奨します。',
+                style: TextStyle(
+                  overflow: TextOverflow.clip,
+                ),
+              ),
               const Padding(padding: EdgeInsets.only(top: 10)),
               if (isFilesExist)
                 const Row(
@@ -119,15 +123,24 @@ class Dialogs {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               const Text('・以下の条件をすべて満たすと、ARコンテンツを開始できます。'),
+              const Text(
+                  style: TextStyle(
+                      color: Colors.blueAccent,
+                      overflow: TextOverflow.ellipsis),
+                  overflow: TextOverflow.clip,
+                  "イベント関連データのダウンロードが未完了のようです…"),
               const Padding(padding: EdgeInsets.only(top: 10)),
               if (isFilesExist)
                 const Row(
                   children: <Widget>[
                     Icon(Icons.check_box),
                     Padding(padding: EdgeInsets.only(left: 10)),
-                    Text(
-                        style: TextStyle(color: Colors.blueAccent),
-                        "全てのイベント関連データの\nダウンロードが完了しました。"),
+                    Flexible(
+                        child: FittedBox(
+                      child: Text(
+                          style: TextStyle(color: Colors.blueAccent),
+                          "全てのイベント関連データの\nダウンロードが完了しました。"),
+                    )),
                   ],
                 )
               else
@@ -135,9 +148,12 @@ class Dialogs {
                   children: <Widget>[
                     Icon(Icons.check_box_outline_blank),
                     Padding(padding: EdgeInsets.only(left: 10)),
-                    Text(
-                        style: TextStyle(color: Colors.blueAccent),
-                        "イベント関連データのダウンロードが\n未完了のようです…"),
+                    Flexible(
+                        child: FittedBox(
+                      child: Text(
+                          style: TextStyle(color: Colors.blueAccent),
+                          "イベント関連データのダウンロードが未完了のようです…"),
+                    )),
                   ],
                 ),
               const Padding(padding: EdgeInsets.only(top: 10)),
@@ -146,9 +162,12 @@ class Dialogs {
                   children: <Widget>[
                     Icon(Icons.check_box),
                     Padding(padding: EdgeInsets.only(left: 10)),
-                    Text(
-                        style: TextStyle(color: Colors.blueAccent),
-                        "位置情報リクエストが\n正常に受諾されました。"),
+                    Flexible(
+                        child: FittedBox(
+                      child: Text(
+                          style: TextStyle(color: Colors.blueAccent),
+                          "位置情報リクエストが正常に受諾されました。"),
+                    )),
                   ],
                 )
               else
@@ -156,9 +175,12 @@ class Dialogs {
                   children: <Widget>[
                     Icon(Icons.check_box_outline_blank),
                     Padding(padding: EdgeInsets.only(left: 10)),
-                    Text(
-                        style: TextStyle(color: Colors.blueAccent),
-                        "位置情報リクエストが拒否されました。\nARコンテンツを使用するためは\n許可が必要です"),
+                    Flexible(
+                        child: FittedBox(
+                      child: Text(
+                          style: TextStyle(color: Colors.blueAccent),
+                          "位置情報リクエストが拒否されました。\nARコンテンツを使用するためは許可が必要です"),
+                    )),
                   ],
                 ),
               const Padding(padding: EdgeInsets.only(top: 10)),
@@ -167,9 +189,12 @@ class Dialogs {
                   children: <Widget>[
                     Icon(Icons.check_box),
                     Padding(padding: EdgeInsets.only(left: 10)),
-                    Text(
-                        style: TextStyle(color: Colors.blueAccent),
-                        "現在、イベント開催エリア内です。\nようこそ！"),
+                    Flexible(
+                        child: FittedBox(
+                      child: Text(
+                          style: TextStyle(color: Colors.blueAccent),
+                          "現在、イベント開催エリア内です。\nようこそ！"),
+                    )),
                   ],
                 )
               else

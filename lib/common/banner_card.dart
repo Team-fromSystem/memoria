@@ -33,9 +33,6 @@ class BannerCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 child: CachedNetworkImage(
                   imageUrl: event.bannerURL,
-                  progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      CircularProgressIndicator(
-                          value: downloadProgress.progress),
                 ),
               ),
             )));

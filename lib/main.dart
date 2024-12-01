@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -6,6 +6,7 @@ import 'package:memoria/firebase_options.dart';
 import 'package:memoria/common/bottomBar/bottom_nav_bar.dart';
 import 'package:memoria/pages/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:memoria/pages/register_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,8 +14,11 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  //TODO エミュレータを使用 デプロイ時には削除？
-  await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  // TODO エミュレータを使用 デプロイ時には削除？
+  // await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  // runApp(ProviderScope(
+  //   child: DevicePreview(builder: (context) => const MyApp()),
+  // ));
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -30,10 +34,10 @@ class MyApp extends StatelessWidget {
         title: 'Memoria',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          fontFamily: GoogleFonts.notoSansJp(
+          fontFamily: GoogleFonts.kiwiMaru(
               textStyle: const TextStyle(
             color: Color(0xff333333),
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w700,
           )).fontFamily,
           colorScheme: ColorScheme.fromSeed(
               seedColor: const Color.fromARGB(255, 66, 206, 171)),
@@ -43,18 +47,8 @@ class MyApp extends StatelessWidget {
           extendBody: true,
           body: PageView(
             controller: controller,
-            children: [
-              const HomePage(),
-              //const SearchPage(),
-              Container(
-                color: Colors.red,
-                child: const Text(
-                  "Search\nPage",
-                  style: TextStyle(fontSize: 80),
-                ),
-              ),
-              //DetailPage(event: ,),
-            ],
+            physics: const NeverScrollableScrollPhysics(),
+            children: const [HomePage(), RegisterPage()],
           ),
           bottomNavigationBar: BottomNavBar(controller: controller),
         ));
