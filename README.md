@@ -170,7 +170,7 @@ unityとの互換性の問題で**flutterのバージョンをfvmを使用して
 <p align="right">(<a href="#top">トップへ</a>)</p>
 
 ## 開発環境構築
-
+- flutter側
 - git clone git@github.com:Team-fromSystem/memoria.git 
    
 - ターミナルで `flutter doctor -v`
