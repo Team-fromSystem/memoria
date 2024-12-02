@@ -179,7 +179,7 @@ class DetailPage extends HookConsumerWidget {
                 if (EventPeriodChecker.checkOpening(event) == -1) {
                   if (!pendingNotificationRequests
                       .any((value) => value.id == event.open.hashCode)) {
-                    Dialogs.applyNotification(context, event.open);
+                    Dialogs.applyNotification(context, event.open, event.title);
                   } else {
                     Dialogs.deleteNotification(
                         context, event.open.hashCode, event.title);

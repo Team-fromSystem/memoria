@@ -21,7 +21,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 //       payload: 'item x');
 // }
 
-Future<void> scheduleNotification(DateTime eventOpen) async {
+Future<void> scheduleNotification(DateTime eventOpen, eventTitle) async {
   final tokyo = getLocation('Asia/Tokyo');
   final tz.TZDateTime open = tz.TZDateTime.from(eventOpen, tokyo);
   const AndroidNotificationDetails androidNotificationDetails =
@@ -36,12 +36,12 @@ Future<void> scheduleNotification(DateTime eventOpen) async {
 
   await flutterLocalNotificationsPlugin.zonedSchedule(
       eventOpen.hashCode,
-      'scheduled title',
-      'scheduled body',
+      '$eventTitleがOpenしました！',
+      '詳細ページから入場ボタンをタップして参加しよう！',
       open, //TZDateTime scheduledDate
       notificationDetails,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      payload: 'item x');
+      payload: '');
 }

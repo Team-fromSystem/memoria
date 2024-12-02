@@ -271,7 +271,8 @@ class Dialogs {
     );
   }
 
-  static Future applyNotification(BuildContext context, DateTime eventOpen) {
+  static Future applyNotification(
+      BuildContext context, DateTime eventOpen, String eventTitle) {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -287,7 +288,7 @@ class Dialogs {
             TextButton(
               child: const Text('OK'),
               onPressed: () {
-                scheduleNotification(eventOpen);
+                scheduleNotification(eventOpen, eventTitle);
               },
             ),
           ],
