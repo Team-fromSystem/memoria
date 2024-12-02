@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:memoria/common/bottomBar/selected_index.dart';
 import 'package:memoria/pages/register_page.dart';
+import 'package:memoria/utils/notification.dart';
 
 class AccountOverlay extends ConsumerWidget {
   final OverlayPortalController controller;
@@ -104,6 +105,8 @@ class AccountOverlay extends ConsumerWidget {
                                     //       builder: (context) =>
                                     //           const RegisterPage()),
                                     // );
+                                    debugPrint("send notification");
+                                    //scheduleNotification();
                                   },
                                   icon: const Icon(Icons.settings),
                                 ),

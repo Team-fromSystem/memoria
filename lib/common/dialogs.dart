@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:memoria/backend/fileDownloader/fileDownloader.dart';
 import 'package:memoria/backend/models/event.dart';
+import 'package:memoria/utils/notification.dart';
 
 class Dialogs {
   static Future fileChecker(
@@ -262,6 +264,152 @@ class Dialogs {
                   }
                 },
               ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static Future applyNotification(BuildContext context, DateTime eventOpen) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('開催時刻に通知しますか？'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('キャンセル'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                scheduleNotification(eventOpen);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static Future deleteNotification(
+      BuildContext context, int openHash, String eventTitle) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('$eventTitleの通知を削除しますか？'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('キャンセル'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () async {
+                await flutterLocalNotificationsPlugin.cancel(openHash);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static Future registerNewEvent(BuildContext context, Event newEvent) {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('新しいEventを登録しますか？'),
+          content: Column(
+            children: <Widget>[
+              Text("タイトル:${newEvent.title}"),
+              Text("キャッチコピー:${newEvent.catchCopy}"),
+              Text("主催者ID:${newEvent.hostID}"),
+              Text("主催者:${newEvent.hostName}"),
+              Text("イベント説明:${newEvent.description}"),
+              Text("開催場所:${newEvent.location}"),
+              Text("エリア半径:${newEvent.areaRadius}"),
+              Text("Open:${newEvent.open}"),
+              Text("Close:${newEvent.close}"),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('キャンセル'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () async {
+                final db = FirebaseFirestore.instance;
+                DocumentReference docRef =
+                    await db.collection("events").add(newEvent.toJson());
+                await docRef.collection("Plane").add({
+                  "decorationModelID": [0],
+                  "mainModelID": [0],
+                });
+                await docRef.collection("Image").add({
+                  "imageID": 0,
+                  "modelID": 0,
+                  "modelPosition": <String, double>{
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                  },
+                  "modelRotaion": <String, double>{
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                  },
+                  "modelSize": 1
+                });
+                await docRef.collection("Immersal").add({
+                  "immersalMapManager": <String, dynamic>{
+                    "mapID": 0,
+                    "mapPosition": <String, double>{
+                      "x": 0,
+                      "y": 0,
+                      "z": 0,
+                    },
+                    "mapRotaion": <String, double>{
+                      "x": 0,
+                      "y": 0,
+                      "z": 0,
+                    },
+                  },
+                  "immersalModelManager": <String, dynamic>{
+                    "modelID": 0,
+                    "modelPosition": <String, double>{
+                      "x": 0,
+                      "y": 0,
+                      "z": 0,
+                    },
+                    "modelRotaion": <String, double>{
+                      "x": 0,
+                      "y": 0,
+                      "z": 0,
+                    },
+                    "modelSize": 1
+                  },
+                  "location": <String, double>{
+                    "latitude": 0,
+                    "longitude": 0,
+                  },
+                  "radius": 0
+                });
+
+                Navigator.of(context).pop();
+              },
             ),
           ],
         );

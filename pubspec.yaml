@@ -57,6 +57,8 @@ dependencies:
   google_maps_flutter: ^2.10.0
   geocoding: ^3.0.0
   device_preview: ^1.2.0
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.10.0
   #flutter_unity_widget: ^2022.2.1
 
 

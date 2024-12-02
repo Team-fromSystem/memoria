@@ -160,7 +160,7 @@ class HomePage extends HookConsumerWidget {
                     SizedBox(
                       width: double.maxFinite,
                       height: 286,
-                      child: favoriteList.isEmpty
+                      child: bookedList.isEmpty
                           ? const FittedBox(
                               child: Expanded(
                                   child: Text(

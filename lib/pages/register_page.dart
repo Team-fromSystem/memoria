@@ -8,7 +8,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geoflutterfire_plus/geoflutterfire_plus.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:memoria/backend/models/event.dart';
-import 'package:memoria/common/bottomBar/selected_index.dart';
+import 'package:memoria/common/dialogs.dart';
 import 'package:memoria/utils/weekday_converter.dart';
 
 class RegisterPage extends HookConsumerWidget {
@@ -18,7 +18,7 @@ class RegisterPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     Size screenSize = MediaQuery.of(context).size;
     double screenWidth = screenSize.width;
-    final db = FirebaseFirestore.instance;
+
     final nowDateTime = DateTime.now();
     final openDateTime = useState<DateTime>(nowDateTime);
     final closeDateTime = useState<DateTime>(nowDateTime);
@@ -65,94 +65,48 @@ class RegisterPage extends HookConsumerWidget {
             label: const Text("作成"),
             icon: const Icon(Icons.save_as_rounded),
             onPressed: () async {
-              String newLocation =
-                  " ${controllerLocation1.text}/${controllerLocation2.text}/${controllerLocation3.text}";
-              List<Location> locations = await locationFromAddress(newLocation);
+              try {
+                String newLocation =
+                    " ${controllerLocation1.text}/${controllerLocation2.text}/${controllerLocation3.text}";
+                List<Location> locations =
+                    await locationFromAddress(newLocation);
+                final GeoPoint geoPoint = GeoPoint(
+                    locations.first.latitude, locations.first.longitude);
+                final String geohash = GeoFirePoint(geoPoint).geohash;
 
-              final GeoPoint geoPoint =
-                  GeoPoint(locations.first.latitude, locations.first.longitude);
-              final String geohash = GeoFirePoint(geoPoint).geohash;
+                Map<String, dynamic> geoMap = {
+                  "geoPoint": geoPoint,
+                  "geohash": geohash,
+                };
+                final List<int> newImageID = [];
+                final List<int> newModelID = [];
+                final List<int> mewDetectType = [];
+                final Event newEvent = Event(
+                    hostID: int.parse(controllerHostID.text),
+                    areaRadius: double.parse(controllerAreaRadius.text),
+                    eventID: "defaultEventID",
+                    bannerURL: "defaultBannerURL",
+                    mapURL: "defaultMapURL",
+                    title: controllerTitle.text,
+                    catchCopy: controllerCC.text,
+                    description: controllerDescription.text,
+                    hostName: controllerHN.text,
+                    location: newLocation,
+                    createdAt: DateTime.now(),
+                    open: openDateTime.value,
+                    close: closeDateTime.value,
+                    imageID: newImageID,
+                    modelID: newModelID,
+                    detectType: mewDetectType,
+                    geo: geoMap);
 
-              Map<String, dynamic> geoMap = {
-                "geoPoint": geoPoint,
-                "geohash": geohash,
-              };
-              final List<int> newImageID = [];
-              final List<int> newModelID = [];
-              final List<int> mewDetectType = [];
-              final Event newEvent = Event(
-                  hostID: controllerHostID.text as int,
-                  areaRadius: controllerAreaRadius.text as double,
-                  eventID: "defaultEventID",
-                  bannerURL: "defaultBannerURL",
-                  mapURL: "defaultMapURL",
-                  title: controllerTitle.text,
-                  catchCopy: controllerCC.text,
-                  description: controllerDescription.text,
-                  hostName: controllerHN.text,
-                  location: newLocation,
-                  createdAt: DateTime.now(),
-                  open: openDateTime.value,
-                  close: closeDateTime.value,
-                  imageID: newImageID,
-                  modelID: newModelID,
-                  detectType: mewDetectType,
-                  geo: geoMap);
-              DocumentReference docRef =
-                  await db.collection("events").add(newEvent.toJson());
-              await docRef.collection("Plane").add({
-                "decorationModelID": [0],
-                "mainModelID": [0],
-              });
-              await docRef.collection("Image").add({
-                "imageID": 0,
-                "modelID": 0,
-                "modelPosition": <String, double>{
-                  "x": 0,
-                  "y": 0,
-                  "z": 0,
-                },
-                "modelRotaion": <String, double>{
-                  "x": 0,
-                  "y": 0,
-                  "z": 0,
-                },
-                "modelSize": 1
-              });
-              await docRef.collection("Immersal").add({
-                "immersalMapManager": <String, dynamic>{
-                  "mapID": 0,
-                  "mapPosition": <String, double>{
-                    "x": 0,
-                    "y": 0,
-                    "z": 0,
-                  },
-                  "mapRotaion": <String, double>{
-                    "x": 0,
-                    "y": 0,
-                    "z": 0,
-                  },
-                },
-                "immersalModelManager": <String, dynamic>{
-                  "modelID": 0,
-                  "modelPosition": <String, double>{
-                    "x": 0,
-                    "y": 0,
-                    "z": 0,
-                  },
-                  "modelRotaion": <String, double>{
-                    "x": 0,
-                    "y": 0,
-                    "z": 0,
-                  },
-                  "modelSize": 1
-                },
-                "location": <String, double>{
-                  "latitude": 0,
-                  "longitude": 0,
-                },
-                "radius": 0
-              });
+                await Dialogs.registerNewEvent(context, newEvent);
+              } catch (e) {
+                debugPrint("$e");
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    duration: const Duration(milliseconds: 5000),
+                    content: Text("入力内容に問題が発生：$e")));
+              }
             },
           ),
           const Padding(padding: EdgeInsets.only(right: 20))
@@ -254,7 +208,8 @@ class RegisterPage extends HookConsumerWidget {
                       ]),
                   width: screenWidth,
                   margin: const EdgeInsets.fromLTRB(10, 3, 10, 16),
-                  padding: const EdgeInsets.only(left: 20, top: 16, right: 20),
+                  padding: const EdgeInsets.only(
+                      left: 20, top: 16, right: 20, bottom: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -288,26 +243,6 @@ class RegisterPage extends HookConsumerWidget {
                           FilteringTextInputFormatter.digitsOnly
                         ],
                         controller: controllerAreaRadius,
-                      ),
-                      const Divider(
-                        thickness: 1.5,
-                      ),
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text("会場付近のmapを表示",
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Color.fromARGB(255, 140, 140, 144))),
-                          IconButton(
-                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                            onPressed: null,
-                            icon: Icon(
-                              Icons.keyboard_arrow_down,
-                              size: 34,
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   )),
@@ -412,7 +347,6 @@ class RegisterPage extends HookConsumerWidget {
                                                     (DateTime newDateTime) {
                                                   openDateTime.value =
                                                       newDateTime;
-                                                  // }
                                                 },
                                               ),
                                             );

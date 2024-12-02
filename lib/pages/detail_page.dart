@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -14,8 +15,10 @@ import 'package:memoria/backend/provider/favorite_list.dart';
 import 'package:memoria/common/dialogs.dart';
 import 'package:memoria/common/image_viewer_overlay.dart';
 import 'package:memoria/pages/google_map_page.dart';
+import 'package:memoria/utils/event_period_checker.dart';
 import 'package:memoria/utils/location_checker.dart';
 import 'package:memoria/utils/location_permission_request.dart';
+import 'package:memoria/utils/notification.dart';
 import 'package:memoria/utils/weekday_converter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -158,10 +161,30 @@ class DetailPage extends HookConsumerWidget {
               child: bookedList.any((value) => value == event)
                   ? Icon(size: 34, color: Colors.teal[600], Icons.bookmark)
                   : const Icon(size: 32, Icons.bookmark_add_outlined),
-              onPressed: () {
+              onPressed: () async {
+                final List<ActiveNotification> activeNotifications =
+                    await flutterLocalNotificationsPlugin
+                        .getActiveNotifications();
+                final List<PendingNotificationRequest>
+                    pendingNotificationRequests =
+                    await flutterLocalNotificationsPlugin
+                        .pendingNotificationRequests();
+                debugPrint(
+                    "activeNotifications:${activeNotifications.length}\n\n\n");
+                debugPrint(
+                    "pendingNotificationRequests:${pendingNotificationRequests.length}\n\n\n");
                 final bookedNotifier =
                     ref.read(bookedListNotifierProvider.notifier);
-                bookedNotifier.toggleBook(event, context);
+                bookedNotifier.toggleBooking(event, context);
+                if (EventPeriodChecker.checkOpening(event) == -1) {
+                  if (!pendingNotificationRequests
+                      .any((value) => value.id == event.open.hashCode)) {
+                    Dialogs.applyNotification(context, event.open);
+                  } else {
+                    Dialogs.deleteNotification(
+                        context, event.open.hashCode, event.title);
+                  }
+                }
               }),
           const Padding(padding: EdgeInsets.only(top: 16)),
           FloatingActionButton(
