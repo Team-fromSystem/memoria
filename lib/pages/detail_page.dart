@@ -3,6 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animated_button/flutter_animated_button.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:location/location.dart';
 import 'package:memoria/backend/fileDownloader/fileDownloader.dart';
@@ -11,8 +14,11 @@ import 'package:memoria/backend/provider/booked_list.dart';
 import 'package:memoria/backend/provider/favorite_list.dart';
 import 'package:memoria/common/dialogs.dart';
 import 'package:memoria/common/image_viewer_overlay.dart';
+import 'package:memoria/pages/google_map_page.dart';
+import 'package:memoria/utils/event_period_checker.dart';
 import 'package:memoria/utils/location_checker.dart';
 import 'package:memoria/utils/location_permission_request.dart';
+import 'package:memoria/utils/notification.dart';
 import 'package:memoria/utils/weekday_converter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -32,19 +38,12 @@ class DetailPage extends HookConsumerWidget {
     final bookedList = ref.watch(bookedListNotifierProvider);
     final isMapImage = useState<bool>(false);
 
-    // ref.listen(favoriteListNotifierProvider, (oldState, newState) {
-    //   debugPrint("brrfore  ${oldState?.length ?? 0}");
-    //   debugPrint("after  ${newState.length}");
-    //   if ((oldState?.length ?? 0) < newState.length) {
-    //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    //         duration: const Duration(milliseconds: 1000),
-    //         content: Text("${newState.last.title} がfavoriteに追加されました！")));
-    //     return;
-    //   }
-    //   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-    //       duration: Duration(milliseconds: 1000),
-    //       content: Text("favoriteから要素が削除されました")));
-    // });
+    final LatLng eventLatLng =
+        LatLng(event.geo['geoPoint'].latitude, event.geo['geoPoint'].longitude);
+
+    late GoogleMapController mapController;
+    final PageController mapPageCon = PageController();
+    final isGoogleMap = useState(true);
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(253, 235, 234, 238),
@@ -162,10 +161,30 @@ class DetailPage extends HookConsumerWidget {
               child: bookedList.any((value) => value == event)
                   ? Icon(size: 34, color: Colors.teal[600], Icons.bookmark)
                   : const Icon(size: 32, Icons.bookmark_add_outlined),
-              onPressed: () {
+              onPressed: () async {
+                final List<ActiveNotification> activeNotifications =
+                    await flutterLocalNotificationsPlugin
+                        .getActiveNotifications();
+                final List<PendingNotificationRequest>
+                    pendingNotificationRequests =
+                    await flutterLocalNotificationsPlugin
+                        .pendingNotificationRequests();
+                debugPrint(
+                    "activeNotifications:${activeNotifications.length}\n\n\n");
+                debugPrint(
+                    "pendingNotificationRequests:${pendingNotificationRequests.length}\n\n\n");
                 final bookedNotifier =
                     ref.read(bookedListNotifierProvider.notifier);
-                bookedNotifier.toggleBook(event, context);
+                bookedNotifier.toggleBooking(event, context);
+                if (EventPeriodChecker.checkOpening(event) == -1) {
+                  if (!pendingNotificationRequests
+                      .any((value) => value.id == event.open.hashCode)) {
+                    Dialogs.applyNotification(context, event.open, event.title);
+                  } else {
+                    Dialogs.deleteNotification(
+                        context, event.open.hashCode, event.title);
+                  }
+                }
               }),
           const Padding(padding: EdgeInsets.only(top: 16)),
           FloatingActionButton(
@@ -182,7 +201,7 @@ class DetailPage extends HookConsumerWidget {
                     ref.read(favoriteListNotifierProvider.notifier);
                 favNotifier.toggleFavorite(event, context);
               }),
-          const Padding(padding: EdgeInsets.only(top: 20)),
+          const Padding(padding: EdgeInsets.only(top: 40)),
         ],
       ),
       body: SingleChildScrollView(
@@ -204,7 +223,6 @@ class DetailPage extends HookConsumerWidget {
                           spreadRadius: 0.2,
                         )
                       ]),
-                  //TODO
                   child: GestureDetector(
                     onTap: () {
                       isMapImage.value = false;
@@ -222,7 +240,16 @@ class DetailPage extends HookConsumerWidget {
                     ),
                   )),
               Container(
-                margin: const EdgeInsets.only(left: 18, top: 16),
+                margin: const EdgeInsets.only(right: 18, top: 2),
+                alignment: Alignment.topRight,
+                child: const Text(
+                  "TAPで拡大",
+                  style: TextStyle(
+                      fontSize: 12, color: Color.fromARGB(255, 140, 140, 144)),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 18, top: 0),
                 alignment: Alignment.bottomLeft,
                 child: const Text(
                   "イベント情報",
@@ -251,12 +278,12 @@ class DetailPage extends HookConsumerWidget {
                       RichText(
                           text: TextSpan(
                               text: "${event.title}\n",
-                              style: const TextStyle(
+                              style: TextStyle(
+                                  fontFamily: "${GoogleFonts.kiwiMaru}",
                                   height: 1.6,
-                                  color: Color(0xff333333),
+                                  color: const Color(0xff333333),
                                   fontSize: 30),
                               children: <TextSpan>[
-                            //const TextSpan(text: "\n"),
                             TextSpan(
                               text: event.catchCopy,
                               style: const TextStyle(
@@ -267,9 +294,9 @@ class DetailPage extends HookConsumerWidget {
                               style: TextStyle(
                                   color: Color(0xff333333), fontSize: 12),
                             ),
-                            const TextSpan(
-                              text: "主催： aaa\n\n",
-                              style: TextStyle(
+                            TextSpan(
+                              text: "主催： ${event.hostName}\n\n",
+                              style: const TextStyle(
                                   color: Color(0xff333333),
                                   fontSize: 18,
                                   height: 1.3),
@@ -277,9 +304,10 @@ class DetailPage extends HookConsumerWidget {
                             TextSpan(
                               text: event.description.replaceAll('\\n', '\n'),
                               style: const TextStyle(
-                                  color: Color(0xff333333),
-                                  fontSize: 16,
-                                  height: 1.5),
+                                color: Color(0xff333333),
+                                fontSize: 16,
+                                height: 1.5,
+                              ),
                             ),
                           ])),
                       const Divider(
@@ -380,46 +408,168 @@ class DetailPage extends HookConsumerWidget {
                               ]),
                           expandedCrossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            SizedBox(
-                              width: double.maxFinite,
-                              height: 300,
-                              //TODO
-                              child: GestureDetector(
-                                onTap: () {
-                                  isMapImage.value = true;
-                                  overlayPortalController.show();
-                                },
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: CachedNetworkImage(
-                                    imageUrl: event.mapURL,
-                                    progressIndicatorBuilder: (context, url,
-                                            downloadProgress) =>
-                                        CircularProgressIndicator(
-                                            value: downloadProgress.progress),
-                                  ),
-                                ),
-                              ),
-                            ),
+                            Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(10, 4, 10, 10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Row(
+                                      children: <Widget>[
+                                        Icon(CupertinoIcons.left_chevron,
+                                            size: 24,
+                                            color: isGoogleMap.value
+                                                ? const Color.fromARGB(
+                                                    255, 140, 140, 144)
+                                                : const Color.fromARGB(
+                                                    255, 66, 66, 67)),
+                                        GestureDetector(
+                                          onTap: () {
+                                            mapPageCon.animateToPage(0,
+                                                duration: const Duration(
+                                                    milliseconds: 400),
+                                                curve: Curves.ease);
+                                          },
+                                          child: Text(
+                                            "GoogleMap",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: isGoogleMap.value
+                                                  ? const Color.fromARGB(
+                                                      255, 140, 140, 144)
+                                                  : const Color.fromARGB(
+                                                      255, 66, 66, 67),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: <Widget>[
+                                        GestureDetector(
+                                          onTap: () {
+                                            mapPageCon.animateToPage(1,
+                                                duration: const Duration(
+                                                    milliseconds: 400),
+                                                curve: Curves.ease);
+                                          },
+                                          child: Text(
+                                            "ImageMap",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: isGoogleMap.value
+                                                  ? const Color.fromARGB(
+                                                      255, 66, 66, 67)
+                                                  : const Color.fromARGB(
+                                                      255, 140, 140, 144),
+                                            ),
+                                          ),
+                                        ),
+                                        Icon(CupertinoIcons.right_chevron,
+                                            size: 24,
+                                            color: isGoogleMap.value
+                                                ? const Color.fromARGB(
+                                                    255, 66, 66, 67)
+                                                : const Color.fromARGB(
+                                                    255, 140, 140, 144)),
+                                      ],
+                                    ),
+                                  ],
+                                )),
+                            Container(
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                                width: double.maxFinite,
+                                height: 440,
+                                child: PageView(
+                                  controller: mapPageCon,
+                                  onPageChanged: (value) {
+                                    value == 0
+                                        ? isGoogleMap.value = true
+                                        : isGoogleMap.value = false;
+                                  },
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        SizedBox(
+                                          height: 380,
+                                          child: GoogleMap(
+                                            rotateGesturesEnabled: false,
+                                            scrollGesturesEnabled: false,
+                                            tiltGesturesEnabled: false,
+                                            initialCameraPosition:
+                                                CameraPosition(
+                                                    target: eventLatLng,
+                                                    zoom: 7.5),
+                                            myLocationEnabled: false,
+                                            myLocationButtonEnabled: false,
+                                            mapType: MapType.normal,
+                                            zoomGesturesEnabled: false,
+                                            zoomControlsEnabled: true,
+                                            onMapCreated: (GoogleMapController
+                                                controller) {
+                                              mapController = controller;
+                                            },
+                                            onTap: (LatLng latlng) {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        GoogleMapPage(
+                                                          geoPoint: event
+                                                              .geo['geoPoint'],
+                                                          areaRadius:
+                                                              event.areaRadius,
+                                                        )),
+                                              );
+                                            },
+                                            markers: {
+                                              Marker(
+                                                markerId:
+                                                    const MarkerId('marker_1'),
+                                                position: eventLatLng,
+                                              ),
+                                            },
+                                            circles: {
+                                              Circle(
+                                                circleId:
+                                                    const CircleId('circle_1'),
+                                                center: eventLatLng,
+                                                radius: 1000,
+                                                fillColor: const Color.fromARGB(
+                                                        255, 136, 212, 185)
+                                                    .withOpacity(0.3),
+                                                strokeWidth: 1,
+                                              ),
+                                            },
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        isMapImage.value = true;
+                                        overlayPortalController.show();
+                                      },
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: CachedNetworkImage(
+                                          imageUrl: event.mapURL,
+                                          progressIndicatorBuilder: (context,
+                                                  url, downloadProgress) =>
+                                              CircularProgressIndicator(
+                                                  value: downloadProgress
+                                                      .progress),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ))
                           ],
                         ),
-                        // const Row(
-                        //   mainAxisAlignment: MainAxisAlignment.end,
-                        //   children: [
-                        //     Text("会場付近のmapを表示",
-                        //         style: TextStyle(
-                        //             fontSize: 14,
-                        //             color: Color.fromARGB(255, 140, 140, 144))),
-                        //     IconButton(
-                        //       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                        //       onPressed: null,
-                        //       icon: Icon(
-                        //         Icons.keyboard_arrow_down,
-                        //         size: 34,
-                        //       ),
-                        //     ),
-                        //   ],
-                        // ),
                       )
                     ],
                   )),

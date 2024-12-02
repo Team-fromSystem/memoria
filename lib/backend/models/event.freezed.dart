@@ -22,6 +22,8 @@ Event _$EventFromJson(Map<String, dynamic> json) {
 mixin _$Event {
   @JsonKey(name: 'hostID')
   int get hostID => throw _privateConstructorUsedError;
+  @JsonKey(name: 'areaRadius')
+  double get areaRadius => throw _privateConstructorUsedError;
   @JsonKey(name: 'eventID')
   String get eventID => throw _privateConstructorUsedError;
   @JsonKey(name: 'bannerURL')
@@ -34,6 +36,8 @@ mixin _$Event {
   String get catchCopy => throw _privateConstructorUsedError;
   @JsonKey(name: 'description')
   String get description => throw _privateConstructorUsedError;
+  @JsonKey(name: 'hostName')
+  String get hostName => throw _privateConstructorUsedError;
   @JsonKey(name: 'location')
   String get location => throw _privateConstructorUsedError;
   @JsonKey(name: 'createdAt')
@@ -54,12 +58,8 @@ mixin _$Event {
   @JsonKey(name: 'geo')
   Map<String, dynamic> get geo => throw _privateConstructorUsedError;
 
-  /// Serializes this Event to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-
-  /// Create a copy of Event
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $EventCopyWith<Event> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -70,12 +70,14 @@ abstract class $EventCopyWith<$Res> {
   @useResult
   $Res call(
       {@JsonKey(name: 'hostID') int hostID,
+      @JsonKey(name: 'areaRadius') double areaRadius,
       @JsonKey(name: 'eventID') String eventID,
       @JsonKey(name: 'bannerURL') String bannerURL,
       @JsonKey(name: 'mapURL') String mapURL,
       @JsonKey(name: 'title') String title,
       @JsonKey(name: 'catchCopy') String catchCopy,
       @JsonKey(name: 'description') String description,
+      @JsonKey(name: 'hostName') String hostName,
       @JsonKey(name: 'location') String location,
       @JsonKey(name: 'createdAt') @DateTimeConverter() DateTime createdAt,
       @JsonKey(name: 'open') @DateTimeConverter() DateTime open,
@@ -96,18 +98,18 @@ class _$EventCopyWithImpl<$Res, $Val extends Event>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of Event
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? hostID = null,
+    Object? areaRadius = null,
     Object? eventID = null,
     Object? bannerURL = null,
     Object? mapURL = null,
     Object? title = null,
     Object? catchCopy = null,
     Object? description = null,
+    Object? hostName = null,
     Object? location = null,
     Object? createdAt = null,
     Object? open = null,
@@ -122,6 +124,10 @@ class _$EventCopyWithImpl<$Res, $Val extends Event>
           ? _value.hostID
           : hostID // ignore: cast_nullable_to_non_nullable
               as int,
+      areaRadius: null == areaRadius
+          ? _value.areaRadius
+          : areaRadius // ignore: cast_nullable_to_non_nullable
+              as double,
       eventID: null == eventID
           ? _value.eventID
           : eventID // ignore: cast_nullable_to_non_nullable
@@ -145,6 +151,10 @@ class _$EventCopyWithImpl<$Res, $Val extends Event>
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
+              as String,
+      hostName: null == hostName
+          ? _value.hostName
+          : hostName // ignore: cast_nullable_to_non_nullable
               as String,
       location: null == location
           ? _value.location
@@ -191,12 +201,14 @@ abstract class _$$EventImplCopyWith<$Res> implements $EventCopyWith<$Res> {
   @useResult
   $Res call(
       {@JsonKey(name: 'hostID') int hostID,
+      @JsonKey(name: 'areaRadius') double areaRadius,
       @JsonKey(name: 'eventID') String eventID,
       @JsonKey(name: 'bannerURL') String bannerURL,
       @JsonKey(name: 'mapURL') String mapURL,
       @JsonKey(name: 'title') String title,
       @JsonKey(name: 'catchCopy') String catchCopy,
       @JsonKey(name: 'description') String description,
+      @JsonKey(name: 'hostName') String hostName,
       @JsonKey(name: 'location') String location,
       @JsonKey(name: 'createdAt') @DateTimeConverter() DateTime createdAt,
       @JsonKey(name: 'open') @DateTimeConverter() DateTime open,
@@ -215,18 +227,18 @@ class __$$EventImplCopyWithImpl<$Res>
       _$EventImpl _value, $Res Function(_$EventImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of Event
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? hostID = null,
+    Object? areaRadius = null,
     Object? eventID = null,
     Object? bannerURL = null,
     Object? mapURL = null,
     Object? title = null,
     Object? catchCopy = null,
     Object? description = null,
+    Object? hostName = null,
     Object? location = null,
     Object? createdAt = null,
     Object? open = null,
@@ -241,6 +253,10 @@ class __$$EventImplCopyWithImpl<$Res>
           ? _value.hostID
           : hostID // ignore: cast_nullable_to_non_nullable
               as int,
+      areaRadius: null == areaRadius
+          ? _value.areaRadius
+          : areaRadius // ignore: cast_nullable_to_non_nullable
+              as double,
       eventID: null == eventID
           ? _value.eventID
           : eventID // ignore: cast_nullable_to_non_nullable
@@ -264,6 +280,10 @@ class __$$EventImplCopyWithImpl<$Res>
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
+              as String,
+      hostName: null == hostName
+          ? _value.hostName
+          : hostName // ignore: cast_nullable_to_non_nullable
               as String,
       location: null == location
           ? _value.location
@@ -306,12 +326,14 @@ class __$$EventImplCopyWithImpl<$Res>
 class _$EventImpl extends _Event {
   const _$EventImpl(
       {@JsonKey(name: 'hostID') required this.hostID,
+      @JsonKey(name: 'areaRadius') required this.areaRadius,
       @JsonKey(name: 'eventID') required this.eventID,
       @JsonKey(name: 'bannerURL') required this.bannerURL,
       @JsonKey(name: 'mapURL') required this.mapURL,
       @JsonKey(name: 'title') required this.title,
       @JsonKey(name: 'catchCopy') required this.catchCopy,
       @JsonKey(name: 'description') required this.description,
+      @JsonKey(name: 'hostName') required this.hostName,
       @JsonKey(name: 'location') required this.location,
       @JsonKey(name: 'createdAt') @DateTimeConverter() required this.createdAt,
       @JsonKey(name: 'open') @DateTimeConverter() required this.open,
@@ -333,6 +355,9 @@ class _$EventImpl extends _Event {
   @JsonKey(name: 'hostID')
   final int hostID;
   @override
+  @JsonKey(name: 'areaRadius')
+  final double areaRadius;
+  @override
   @JsonKey(name: 'eventID')
   final String eventID;
   @override
@@ -350,6 +375,9 @@ class _$EventImpl extends _Event {
   @override
   @JsonKey(name: 'description')
   final String description;
+  @override
+  @JsonKey(name: 'hostName')
+  final String hostName;
   @override
   @JsonKey(name: 'location')
   final String location;
@@ -403,7 +431,7 @@ class _$EventImpl extends _Event {
 
   @override
   String toString() {
-    return 'Event(hostID: $hostID, eventID: $eventID, bannerURL: $bannerURL, mapURL: $mapURL, title: $title, catchCopy: $catchCopy, description: $description, location: $location, createdAt: $createdAt, open: $open, close: $close, imageID: $imageID, modelID: $modelID, detectType: $detectType, geo: $geo)';
+    return 'Event(hostID: $hostID, areaRadius: $areaRadius, eventID: $eventID, bannerURL: $bannerURL, mapURL: $mapURL, title: $title, catchCopy: $catchCopy, description: $description, hostName: $hostName, location: $location, createdAt: $createdAt, open: $open, close: $close, imageID: $imageID, modelID: $modelID, detectType: $detectType, geo: $geo)';
   }
 
   @override
@@ -412,6 +440,8 @@ class _$EventImpl extends _Event {
         (other.runtimeType == runtimeType &&
             other is _$EventImpl &&
             (identical(other.hostID, hostID) || other.hostID == hostID) &&
+            (identical(other.areaRadius, areaRadius) ||
+                other.areaRadius == areaRadius) &&
             (identical(other.eventID, eventID) || other.eventID == eventID) &&
             (identical(other.bannerURL, bannerURL) ||
                 other.bannerURL == bannerURL) &&
@@ -421,6 +451,8 @@ class _$EventImpl extends _Event {
                 other.catchCopy == catchCopy) &&
             (identical(other.description, description) ||
                 other.description == description) &&
+            (identical(other.hostName, hostName) ||
+                other.hostName == hostName) &&
             (identical(other.location, location) ||
                 other.location == location) &&
             (identical(other.createdAt, createdAt) ||
@@ -434,17 +466,19 @@ class _$EventImpl extends _Event {
             const DeepCollectionEquality().equals(other._geo, _geo));
   }
 
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
       runtimeType,
       hostID,
+      areaRadius,
       eventID,
       bannerURL,
       mapURL,
       title,
       catchCopy,
       description,
+      hostName,
       location,
       createdAt,
       open,
@@ -454,9 +488,7 @@ class _$EventImpl extends _Event {
       const DeepCollectionEquality().hash(_detectType),
       const DeepCollectionEquality().hash(_geo));
 
-  /// Create a copy of Event
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$EventImplCopyWith<_$EventImpl> get copyWith =>
@@ -473,12 +505,14 @@ class _$EventImpl extends _Event {
 abstract class _Event extends Event {
   const factory _Event(
       {@JsonKey(name: 'hostID') required final int hostID,
+      @JsonKey(name: 'areaRadius') required final double areaRadius,
       @JsonKey(name: 'eventID') required final String eventID,
       @JsonKey(name: 'bannerURL') required final String bannerURL,
       @JsonKey(name: 'mapURL') required final String mapURL,
       @JsonKey(name: 'title') required final String title,
       @JsonKey(name: 'catchCopy') required final String catchCopy,
       @JsonKey(name: 'description') required final String description,
+      @JsonKey(name: 'hostName') required final String hostName,
       @JsonKey(name: 'location') required final String location,
       @JsonKey(name: 'createdAt')
       @DateTimeConverter()
@@ -500,6 +534,9 @@ abstract class _Event extends Event {
   @JsonKey(name: 'hostID')
   int get hostID;
   @override
+  @JsonKey(name: 'areaRadius')
+  double get areaRadius;
+  @override
   @JsonKey(name: 'eventID')
   String get eventID;
   @override
@@ -517,6 +554,9 @@ abstract class _Event extends Event {
   @override
   @JsonKey(name: 'description')
   String get description;
+  @override
+  @JsonKey(name: 'hostName')
+  String get hostName;
   @override
   @JsonKey(name: 'location')
   String get location;
@@ -544,11 +584,8 @@ abstract class _Event extends Event {
   @override
   @JsonKey(name: 'geo')
   Map<String, dynamic> get geo;
-
-  /// Create a copy of Event
-  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$EventImplCopyWith<_$EventImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

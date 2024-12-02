@@ -30,28 +30,5 @@ class FavoriteListNotifier extends _$FavoriteListNotifier {
           duration: const Duration(milliseconds: 1000),
           content: Text("${newState.last.title} がfavoriteに追加されました！")));
     }
-
-    //   final oldState = state;
-    //   debugPrint("${event.title}をトグル！");
-    //   for (var value in oldState) {
-    //     if (value == event) {
-    //       debugPrint("${event.title}は既に存在");
-    //       oldState.remove(value);
-    //       final newState = oldState;
-    //       state = newState;
-    //       debugPrint("${event.title} is deleted!\nitems:${oldState.length}");
-    //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    //           duration: const Duration(milliseconds: 1000),
-    //           content: Text("${event.title} がfavoriteから削除されました")));
-    //       return;
-    //     }
-    //   }
-    //   final newState = [...oldState, event];
-    //   state = newState;
-    //   debugPrint("${event.title} is added!\nitems:${newState.length}");
-
-    //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    //       duration: const Duration(milliseconds: 1000),
-    //       content: Text("${newState.last.title} がfavoriteに追加されました！")));
   }
 }

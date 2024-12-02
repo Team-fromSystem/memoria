@@ -16,12 +16,14 @@ class Event with _$Event {
   ///detectType=3 : Plane
   const factory Event({
     @JsonKey(name: 'hostID') required int hostID,
+    @JsonKey(name: 'areaRadius') required double areaRadius,
     @JsonKey(name: 'eventID') required String eventID,
     @JsonKey(name: 'bannerURL') required String bannerURL,
     @JsonKey(name: 'mapURL') required String mapURL,
     @JsonKey(name: 'title') required String title,
     @JsonKey(name: 'catchCopy') required String catchCopy,
     @JsonKey(name: 'description') required String description,
+    @JsonKey(name: 'hostName') required String hostName,
     @JsonKey(name: 'location') required String location,
     @JsonKey(name: 'createdAt')
     @DateTimeConverter()

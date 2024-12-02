@@ -11,7 +11,7 @@ class BookedListNotifier extends _$BookedListNotifier {
     return [];
   }
 
-  void toggleBook(Event event, BuildContext context) {
+  void toggleBooking(Event event, BuildContext context) {
     final oldState = state;
     if (oldState.contains(event)) {
       // 新しいリストを作成し、該当のイベントを除外
