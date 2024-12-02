@@ -6,6 +6,7 @@
 <p style="display: inline">
   <img src="https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white">
   <img src="https://img.shields.io/badge/Firebase-039BE5?style=for-the-badge&logo=Firebase&logoColor=white">
+  <img src="https://img.shields.io/badge/Unity-%23000000.svg?style=for-the-badge&logo=unity&logoColor=white"> 
 </p>
 
 ## 目次
@@ -14,7 +15,6 @@
 2. [環境](#環境)
 3. [ディレクトリ構成](#ディレクトリ構成)
 4. [開発環境構築](#開発環境構築)
-5. [操作方法](#操作方法)
 
 ## プロジェクト名
 
@@ -25,10 +25,18 @@ memoria (メモリア)
 - 第二回和歌山県イノベーションプログラミングコンテストへの提出用
 - ARを使用して観光地での楽しみ方を増やすアプリです
 - ARの部分の実装にunityを使用しています
+  
+コンテスト審査担当者様へ
+
+事前にgitのsubmoduleを使用している旨を伝えさせていただいたのですが、
+提出直前にてfirebase,unityに関連するversion関連の不具合が発覚し、修正を間に合わせることが叶わなかったため、
+現時点ではflutterのプロジェクトリポジトリとunityのプロジェクトリポジトリを分割した状態で、それぞれを提出させて頂きます。
+提出用のformに2本の動作動画Linkを添付致しましたので、ご確認お願いします。
+  
  
 <br />
 <div align="left">
-    <a href="https://github.com/Team-fromSystem/fromSystem_Unity"><strong>submoduleのリポジトリ »</strong></a>
+    <a href="https://github.com/Team-fromSystem/fromSystem_Unity"><strong>unity側のリポジトリ »</strong></a>
 </div>
 <br />
 
@@ -47,6 +55,9 @@ memoria (メモリア)
 | ・unity 側               | ---------- |
 |   unity                 | 2022.3.451f|
 |   flutter_unity_widget  | 2022.2.0   |
+| ・動作環境               | ---------- |
+|   Android               | 13.0~      |
+|   ios                   | 13~        |
 
 unityとの互換性の問題で**flutterのバージョンをfvmを使用して下げています！**
 
@@ -161,25 +172,6 @@ unityとの互換性の問題で**flutterのバージョンをfvmを使用して
 ## 開発環境構築
 
 - git clone git@github.com:Team-fromSystem/memoria.git 
-   
-- ターミナルで `flutter doctor -v`
-  - flutterが最新の場合、お好きな方法でバージョンを3.22.2に下げてください
-    - fvmの場合(https://zenn.dev/altiveinc/articles/flutter-version-management#dart%E3%81%A7%E3%82%A4%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BC%E3%83%AB)
-    - `fvm install 3.22.2`
-    - `fvm list`
-    - `fvm use 3.22.2`
-- `flutter run`が通れば成功！
-
-<p align="right">(<a href="#top">トップへ</a>)</p>
-
-## 操作方法
-
-- git clone git@github.com:Team-fromSystem/memoria.git --recursive
-  - サブモジュールのファイルも自動で取得されます。
-  - --recursive をつけ忘れた / サブモジュールのファイルを取得したい場合
-    - git clone に --recursiveを付けないとサブモジュールのファイルが取得されませんが、
-    - git submodule update --init で後からチェックアウトできます。
-    - 引用：https://www.m3tech.blog/entry/git-submodule
    
 - ターミナルで `flutter doctor -v`
   - flutterが最新の場合、お好きな方法でバージョンを3.22.2に下げてください
