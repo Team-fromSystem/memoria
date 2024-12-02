@@ -25,8 +25,7 @@ memoria (メモリア)
 - 第二回和歌山県イノベーションプログラミングコンテストへの提出用
 - ARを使用して観光地での楽しみ方を増やすアプリです
 - ARの部分の実装にunityを使用しています
-  - メインをflutterとして、unityをsubmoduleとして分割しています
-  - cloneの際はご注意ください
+ 
 <br />
 <div align="left">
     <a href="https://github.com/Team-fromSystem/fromSystem_Unity"><strong>submoduleのリポジトリ »</strong></a>
@@ -55,19 +54,19 @@ unityとの互換性の問題で**flutterのバージョンをfvmを使用して
 
 ↓その他細かい情報
 <pre>
-flutter doctor -v
-[√] Flutter (Channel stable, 3.24.4, on Microsoft Windows [Version 10.0.22631.4460], locale en-US)
-    • Flutter version 3.24.4 on channel stable at C:\src\flutter
+ fvm flutter doctor -v
+[√] Flutter (Channel stable, 3.22.2, on Microsoft Windows [Version 10.0.22631.4460], locale en-US)
+    • Flutter version 3.22.2 on channel stable at C:\Users\Kousu\fvm\versions\3.22.2
     • Upstream repository https://github.com/flutter/flutter.git
-    • Framework revision 603104015d (4 weeks ago), 2024-10-24 08:01:25 -0700
-    • Engine revision db49896cf2
-    • Dart version 3.5.4
-    • DevTools version 2.37.3
+    • Framework revision 761747bfc5 (6 months ago), 2024-06-05 22:15:13 +0200
+    • Engine revision edd8546116
+    • Dart version 3.4.3
+    • DevTools version 2.34.3
 
 [√] Windows Version (Installed version of Windows is version 10 or higher)
 
 [√] Android toolchain - develop for Android devices (Android SDK version 35.0.0)
-    • Android SDK at C:\Users\user\AppData\Local\Android\Sdk
+    • Android SDK at C:\Users\Kousu\AppData\Local\Android\Sdk
     • Platform android-35, build-tools 35.0.0
     • Java binary at: C:\Program Files\Microsoft\jdk-21.0.4.7-hotspot\bin\java
     • Java version OpenJDK Runtime Environment Microsoft-9889606 (build 21.0.4+7-LTS)
@@ -90,13 +89,14 @@ flutter doctor -v
     • Java version OpenJDK Runtime Environment (build 17.0.11+0--11852314)
 
 [√] VS Code (version 1.95.3)
-    • VS Code at C:\Users\user\AppData\Local\Programs\Microsoft VS Code
+    • VS Code at C:\Users\Kousu\AppData\Local\Programs\Microsoft VS Code
     • Flutter extension version 3.100.0
 
-[√] Connected device (3 available)
-    • Windows (desktop) • windows • windows-x64    • Microsoft Windows [Version 10.0.22631.4460]
-    • Chrome (web)      • chrome  • web-javascript • Google Chrome 129.0.6668.90
-    • Edge (web)        • edge    • web-javascript • Microsoft Edge 131.0.2903.51
+[√] Connected device (4 available)
+    • SO 53B (mobile)   • QV785GJGA6 • android-arm64  • Android 13 (API 33)
+    • Windows (desktop) • windows    • windows-x64    • Microsoft Windows [Version 10.0.22631.4460]
+    • Chrome (web)      • chrome     • web-javascript • Google Chrome 129.0.6668.90
+    • Edge (web)        • edge       • web-javascript • Microsoft Edge 131.0.2903.70
 
 [√] Network resources
     • All expected network resources are available.
@@ -105,7 +105,7 @@ flutter doctor -v
 
 <p align="right">(<a href="#top">トップへ</a>)</p>
 
-## ディレクトリ構成(更新予定)
+## ディレクトリ構成
 
 <pre>
 .
@@ -138,16 +138,21 @@ flutter doctor -v
 │  └─bottomBar
 │          account_overlay.dart
 │          bottom_nav_bar.dart
+│          selected_index.dart
+│          selected_index.g.dart
 │
 ├─pages
-│      ar_page.dart
 │      detail_page.dart
+│      google_map_page.dart
 │      home_page.dart
 │      register_page.dart
 │
 └─utils
+        event_period_checker.dart
         location_checker.dart
         location_permission_request.dart
+        notification.dart
+        notification_permission_request.dart
         weekday_converter.dart
 </pre>
 
@@ -155,12 +160,7 @@ flutter doctor -v
 
 ## 開発環境構築
 
-- git clone git@github.com:Team-fromSystem/memoria.git --recursive
-  - サブモジュールのファイルも自動で取得されます。
-  - --recursive をつけ忘れた / サブモジュールのファイルを取得したい場合
-    - git clone に --recursiveを付けないとサブモジュールのファイルが取得されませんが、
-    - git submodule update --init で後からチェックアウトできます。
-    - 引用：https://www.m3tech.blog/entry/git-submodule
+- git clone git@github.com:Team-fromSystem/memoria.git 
    
 - ターミナルで `flutter doctor -v`
   - flutterが最新の場合、お好きな方法でバージョンを3.22.2に下げてください
@@ -172,7 +172,7 @@ flutter doctor -v
 
 <p align="right">(<a href="#top">トップへ</a>)</p>
 
-## 操作方法(未完了)
+## 操作方法
 
 - git clone git@github.com:Team-fromSystem/memoria.git --recursive
   - サブモジュールのファイルも自動で取得されます。
