@@ -76,6 +76,7 @@ class AccountOverlay extends ConsumerWidget {
                       padding: EdgeInsets.fromLTRB(16, photoHeight - 40, 0, 0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -96,20 +97,21 @@ class AccountOverlay extends ConsumerWidget {
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(60),
                                 ),
-                                child: IconButton(
-                                  iconSize: 50,
-                                  onPressed: () {
-                                    // Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //       builder: (context) =>
-                                    //           const RegisterPage()),
-                                    // );
-                                    debugPrint("send notification");
-                                    //scheduleNotification();
-                                  },
-                                  icon: const Icon(Icons.settings),
-                                ),
+                                // child:
+                                // IconButton(
+                                //   iconSize: 50,
+                                //   onPressed: () {
+                                //     // Navigator.push(
+                                //     //   context,
+                                //     //   MaterialPageRoute(
+                                //     //       builder: (context) =>
+                                //     //           const RegisterPage()),
+                                //     // );
+                                //     debugPrint("send notification");
+                                //     //scheduleNotification();
+                                //   },
+                                //   icon: const Icon(Icons.settings),
+                                // ),
                               )
                             ],
                           ),
@@ -132,6 +134,7 @@ class AccountOverlay extends ConsumerWidget {
                             "3. 入場ボタンをタップしてARを起動、写真撮影を楽しもう！",
                             style: TextStyle(fontSize: 14),
                           ),
+                          const Padding(padding: EdgeInsets.only(bottom: 20))
                         ],
                       ),
                     )
