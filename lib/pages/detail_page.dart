@@ -538,7 +538,7 @@ class DetailPage extends HookConsumerWidget {
                                                 circleId:
                                                     const CircleId('circle_1'),
                                                 center: eventLatLng,
-                                                radius: 1000,
+                                                radius: event.areaRadius,
                                                 fillColor: const Color.fromARGB(
                                                         255, 136, 212, 185)
                                                     .withOpacity(0.3),
