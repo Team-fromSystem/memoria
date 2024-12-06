@@ -12,7 +12,7 @@ import GoogleMaps
       UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
     }
     GeneratedPluginRegistrant.register(with: self)
-    GMSServices.provideAPIKey("AIzaSyARyKS9fUECKjlTLGkIH49dj5Tco7FcuYc")
+    GMSServices.provideAPIKey("")
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }
